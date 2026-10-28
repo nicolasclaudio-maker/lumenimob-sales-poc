@@ -1,0 +1,1111 @@
+{
+  "fixtureVersion": "2.0.0",
+  "generatedAt": "2026-10-28T14:00:00.000Z",
+  "brokerage": {
+    "id": "brokerage-01",
+    "name": "Horizonte Negócios Imobiliários",
+    "maskedCnpj": "12.***.***/0001-40",
+    "creci": "CRECI 28490-J",
+    "city": "São Paulo",
+    "state": "SP"
+  },
+  "manager": {
+    "id": "manager-01",
+    "brokerageId": "brokerage-01",
+    "name": "Helena Vasconcelos",
+    "email": "helena.vasconcelos@horizonteimob.com.br"
+  },
+  "brokers": [
+    {
+      "id": "broker-01",
+      "brokerageId": "brokerage-01",
+      "name": "Rafael Mendonça",
+      "creci": "CRECI 148920-F",
+      "email": "rafael.mendonca@horizonteimob.com.br"
+    },
+    {
+      "id": "broker-02",
+      "brokerageId": "brokerage-01",
+      "name": "Camila Nogueira",
+      "creci": "CRECI 162310-F",
+      "email": "camila.nogueira@horizonteimob.com.br"
+    },
+    {
+      "id": "broker-03",
+      "brokerageId": "brokerage-01",
+      "name": "Eduardo Tavares",
+      "creci": "CRECI 175044-F",
+      "email": "eduardo.tavares@horizonteimob.com.br"
+    }
+  ],
+  "sellers": [
+    {
+      "id": "seller-01",
+      "name": "Carlos Eduardo Peixoto",
+      "maskedDocument": "***.418.290-**",
+      "email": "carlos.peixoto@cliente.horizonteimob.com.br",
+      "phone": "(11) 99124-3810",
+      "civilStatusNote": "Solteiro — único titular registrado na matrícula"
+    },
+    {
+      "id": "seller-02",
+      "name": "Patrícia Monteiro",
+      "maskedDocument": "***.732.640-**",
+      "email": "patricia.monteiro@cliente.horizonteimob.com.br",
+      "phone": "(11) 99248-5120",
+      "civilStatusNote": "Coproprietária — fração ideal de 50% na matrícula"
+    },
+    {
+      "id": "seller-03",
+      "name": "Gustavo Monteiro",
+      "maskedDocument": "***.815.120-**",
+      "email": "gustavo.monteiro@cliente.horizonteimob.com.br",
+      "phone": "(11) 99316-7740",
+      "civilStatusNote": "Coproprietário — fração ideal de 50% na matrícula"
+    },
+    {
+      "id": "seller-04",
+      "name": "Fernando Silveira",
+      "maskedDocument": "***.294.510-**",
+      "email": "fernando.silveira@cliente.horizonteimob.com.br",
+      "phone": "(11) 99402-6390",
+      "civilStatusNote": "Casado em comunhão parcial de bens — anuência conjunta"
+    },
+    {
+      "id": "seller-05",
+      "name": "Beatriz Silveira",
+      "maskedDocument": "***.607.380-**",
+      "email": "beatriz.silveira@cliente.horizonteimob.com.br",
+      "phone": "(11) 99402-6391",
+      "civilStatusNote": "Casada em comunhão parcial de bens — anuência conjunta"
+    },
+    {
+      "id": "seller-06",
+      "name": "Sérgio Cavalcanti",
+      "maskedDocument": "***.951.470-**",
+      "email": "sergio.cavalcanti@cliente.horizonteimob.com.br",
+      "phone": "(11) 99675-2048",
+      "civilStatusNote": "Divorciado — formal de partilha averbado na matrícula"
+    }
+  ],
+  "buyers": [
+    {
+      "id": "buyer-01",
+      "name": "Mariana Duarte",
+      "maskedDocument": "***.384.920-**",
+      "email": "mariana.duarte@cliente.horizonteimob.com.br",
+      "phone": "(11) 98741-2205",
+      "preferredPaymentModality": "FINANCIADO",
+      "interestedPropertyIds": ["prop-06", "prop-01"]
+    },
+    {
+      "id": "buyer-02",
+      "name": "Roberto Almeida",
+      "maskedDocument": "***.529.180-**",
+      "email": "roberto.almeida@cliente.horizonteimob.com.br",
+      "phone": "(11) 98832-4410",
+      "preferredPaymentModality": "A_VISTA",
+      "interestedPropertyIds": ["prop-02", "prop-04"]
+    },
+    {
+      "id": "buyer-03",
+      "name": "Juliana Ribeiro",
+      "maskedDocument": "***.641.730-**",
+      "email": "juliana.ribeiro@cliente.horizonteimob.com.br",
+      "phone": "(11) 98519-9034",
+      "preferredPaymentModality": "FINANCIADO",
+      "interestedPropertyIds": ["prop-03"]
+    },
+    {
+      "id": "buyer-04",
+      "name": "André Vasconcelos",
+      "maskedDocument": "***.193.850-**",
+      "email": "andre.vasconcelos@cliente.horizonteimob.com.br",
+      "phone": "(11) 98407-1182",
+      "preferredPaymentModality": "FINANCIADO",
+      "interestedPropertyIds": ["prop-03", "prop-05"]
+    },
+    {
+      "id": "buyer-05",
+      "name": "Luciana Barros",
+      "maskedDocument": "***.876.340-**",
+      "email": "luciana.barros@cliente.horizonteimob.com.br",
+      "phone": "(11) 98265-7309",
+      "preferredPaymentModality": "A_VISTA",
+      "interestedPropertyIds": ["prop-01", "prop-02", "prop-06"]
+    }
+  ],
+  "properties": [
+    {
+      "id": "prop-01",
+      "code": "IMO-104",
+      "title": "Edifício Solar dos Ipês — Apto 101",
+      "type": "APARTAMENTO",
+      "address": "Rua das Magnólias, 240, Apto 101",
+      "neighborhood": "Jardim Paulista",
+      "city": "São Paulo",
+      "state": "SP",
+      "registrationCode": "Matrícula nº 84.101 — 4º CRI/SP",
+      "askingPrice": 850000,
+      "preferredPaymentModality": "FINANCIADO",
+      "acceptsFinancing": true,
+      "sellerIds": ["seller-01"],
+      "brokerId": "broker-01",
+      "commercialStatus": "DISPONIVEL",
+      "listingStatus": "PUBLICADO",
+      "saleAuthorization": {
+        "code": "AUT-2026-014",
+        "status": "VIGENTE",
+        "validUntil": "2027-03-31",
+        "exclusivity": true,
+        "expectedCommissionPercent": 6
+      }
+    },
+    {
+      "id": "prop-02",
+      "code": "IMO-218",
+      "title": "Residência Jardim Europa",
+      "type": "CASA",
+      "address": "Rua Groenlândia, 415",
+      "neighborhood": "Jardim Europa",
+      "city": "São Paulo",
+      "state": "SP",
+      "registrationCode": "Matrícula nº 52.218 — 1º CRI/SP",
+      "askingPrice": 1250000,
+      "preferredPaymentModality": "A_VISTA",
+      "acceptsFinancing": false,
+      "sellerIds": ["seller-02", "seller-03"],
+      "brokerId": "broker-01",
+      "commercialStatus": "DISPONIVEL",
+      "listingStatus": "PUBLICADO",
+      "saleAuthorization": {
+        "code": "AUT-2026-019",
+        "status": "VIGENTE",
+        "validUntil": "2027-02-28",
+        "exclusivity": false,
+        "expectedCommissionPercent": 6
+      }
+    },
+    {
+      "id": "prop-03",
+      "code": "IMO-305",
+      "title": "Condomínio Piazza Navona — Apto 42",
+      "type": "APARTAMENTO",
+      "address": "Alameda Lorena, 880, Apto 42",
+      "neighborhood": "Jardins",
+      "city": "São Paulo",
+      "state": "SP",
+      "registrationCode": "Matrícula nº 91.305 — 4º CRI/SP",
+      "askingPrice": 980000,
+      "preferredPaymentModality": "FINANCIADO",
+      "acceptsFinancing": true,
+      "sellerIds": ["seller-04", "seller-05"],
+      "brokerId": "broker-02",
+      "commercialStatus": "RESERVADO",
+      "listingStatus": "PUBLICADO_EM_NEGOCIACAO",
+      "saleAuthorization": {
+        "code": "AUT-2026-023",
+        "status": "VIGENTE",
+        "validUntil": "2027-04-30",
+        "exclusivity": true,
+        "expectedCommissionPercent": 6
+      }
+    },
+    {
+      "id": "prop-04",
+      "code": "IMO-412",
+      "title": "Casa Alto de Pinheiros",
+      "type": "CASA",
+      "address": "Rua Bochim, 310",
+      "neighborhood": "Alto de Pinheiros",
+      "city": "São Paulo",
+      "state": "SP",
+      "registrationCode": "Matrícula nº 67.412 — 10º CRI/SP",
+      "askingPrice": 1420000,
+      "preferredPaymentModality": "A_VISTA",
+      "acceptsFinancing": false,
+      "sellerIds": ["seller-06"],
+      "brokerId": "broker-03",
+      "commercialStatus": "RESERVADO",
+      "listingStatus": "PUBLICADO_EM_NEGOCIACAO",
+      "saleAuthorization": {
+        "code": "AUT-2026-027",
+        "status": "VIGENTE",
+        "validUntil": "2027-01-31",
+        "exclusivity": false,
+        "expectedCommissionPercent": 5
+      }
+    },
+    {
+      "id": "prop-05",
+      "code": "IMO-509",
+      "title": "Edifício Mirante do Parque — Apto 802",
+      "type": "APARTAMENTO",
+      "address": "Rua Afonso Braz, 620, Apto 802",
+      "neighborhood": "Vila Nova Conceição",
+      "city": "São Paulo",
+      "state": "SP",
+      "registrationCode": "Matrícula nº 113.509 — 4º CRI/SP",
+      "askingPrice": 760000,
+      "preferredPaymentModality": "FINANCIADO",
+      "acceptsFinancing": true,
+      "sellerIds": ["seller-01"],
+      "brokerId": "broker-02",
+      "commercialStatus": "SOB_CONTRATO",
+      "listingStatus": "DESPUBLICADO",
+      "saleAuthorization": {
+        "code": "AUT-2026-031",
+        "status": "VIGENTE",
+        "validUntil": "2027-05-31",
+        "exclusivity": true,
+        "expectedCommissionPercent": 6
+      }
+    },
+    {
+      "id": "prop-06",
+      "code": "IMO-614",
+      "title": "Sobrado Vila Madalena",
+      "type": "CASA",
+      "address": "Rua Harmonia, 540",
+      "neighborhood": "Vila Madalena",
+      "city": "São Paulo",
+      "state": "SP",
+      "registrationCode": "Matrícula nº 78.614 — 10º CRI/SP",
+      "askingPrice": 1150000,
+      "preferredPaymentModality": "A_VISTA",
+      "acceptsFinancing": true,
+      "sellerIds": ["seller-02", "seller-06"],
+      "brokerId": "broker-03",
+      "commercialStatus": "DISPONIVEL",
+      "listingStatus": "PUBLICADO",
+      "saleAuthorization": {
+        "code": "AUT-2026-038",
+        "status": "VIGENTE",
+        "validUntil": "2027-06-30",
+        "exclusivity": false,
+        "expectedCommissionPercent": 6
+      }
+    }
+  ],
+  "opportunities": [
+    {
+      "id": "opp-01",
+      "code": "OP-2026-01",
+      "propertyId": "prop-01",
+      "buyerId": "buyer-01",
+      "brokerId": "broker-01",
+      "status": "ATENDIMENTO",
+      "attendanceSummary": "Mariana Duarte visitou o Sobrado Vila Madalena (IMO-614) e o Edifício Solar dos Ipês — Apto 101 (IMO-104); atendimento convertido para avaliação de proposta financiada no Apto 101.",
+      "createdAt": "2026-10-20T13:00:00.000Z",
+      "updatedAt": "2026-10-20T13:00:00.000Z",
+      "timeline": [
+        {
+          "id": "evt-opp-01-1",
+          "timestamp": "2026-10-20T13:00:00.000Z",
+          "actor": "Rafael Mendonça",
+          "type": "OPORTUNIDADE_CRIADA",
+          "description": "Oportunidade aberta após visita técnica aos imóveis IMO-614 e IMO-104."
+        }
+      ]
+    },
+    {
+      "id": "opp-02",
+      "code": "OP-2026-02",
+      "propertyId": "prop-02",
+      "buyerId": "buyer-02",
+      "brokerId": "broker-01",
+      "status": "EM_PROPOSTA",
+      "offerId": "offer-01",
+      "attendanceSummary": "Roberto Almeida apresentou nova proposta à vista para a Residência Jardim Europa após revisão de valores solicitada pelos coproprietários.",
+      "createdAt": "2026-10-18T10:30:00.000Z",
+      "updatedAt": "2026-10-22T15:20:00.000Z",
+      "timeline": [
+        {
+          "id": "evt-opp-02-1",
+          "timestamp": "2026-10-18T10:30:00.000Z",
+          "actor": "Rafael Mendonça",
+          "type": "OPORTUNIDADE_CRIADA",
+          "description": "Oportunidade aberta para Residência Jardim Europa (IMO-218)."
+        },
+        {
+          "id": "evt-opp-02-2",
+          "timestamp": "2026-10-19T11:00:00.000Z",
+          "actor": "Roberto Almeida",
+          "type": "PROPOSTA_ENVIADA",
+          "description": "Proposta v1 enviada no valor de R$ 1.150.000,00 à vista."
+        },
+        {
+          "id": "evt-opp-02-3",
+          "timestamp": "2026-10-20T16:10:00.000Z",
+          "actor": "Patrícia Monteiro",
+          "type": "PROPOSTA_REJEITADA",
+          "description": "Versão v1 recusada pelos coproprietários por valor abaixo do piso acordado."
+        },
+        {
+          "id": "evt-opp-02-4",
+          "timestamp": "2026-10-22T15:20:00.000Z",
+          "actor": "Roberto Almeida",
+          "type": "PROPOSTA_ENVIADA",
+          "description": "Nova versão v2 enviada no valor de R$ 1.210.000,00 à vista mantendo o histórico da v1."
+        }
+      ]
+    },
+    {
+      "id": "opp-03",
+      "code": "OP-2026-03",
+      "propertyId": "prop-03",
+      "buyerId": "buyer-03",
+      "brokerId": "broker-02",
+      "status": "ACEITA",
+      "offerId": "offer-02",
+      "acceptedOfferVersionId": "offer-02-v2",
+      "saleCaseId": "case-01",
+      "attendanceSummary": "Contraproposta dos proprietários aceita por Juliana Ribeiro no Condomínio Piazza Navona — Apto 42; dossiê em diligência documental.",
+      "createdAt": "2026-10-12T09:00:00.000Z",
+      "updatedAt": "2026-10-16T14:00:00.000Z",
+      "timeline": [
+        {
+          "id": "evt-opp-03-1",
+          "timestamp": "2026-10-12T09:00:00.000Z",
+          "actor": "Camila Nogueira",
+          "type": "OPORTUNIDADE_CRIADA",
+          "description": "Oportunidade aberta para Condomínio Piazza Navona — Apto 42 (IMO-305)."
+        },
+        {
+          "id": "evt-opp-03-2",
+          "timestamp": "2026-10-13T14:00:00.000Z",
+          "actor": "Juliana Ribeiro",
+          "type": "PROPOSTA_ENVIADA",
+          "description": "Proposta v1 enviada no valor de R$ 940.000,00 com financiamento bancário."
+        },
+        {
+          "id": "evt-opp-03-3",
+          "timestamp": "2026-10-15T10:00:00.000Z",
+          "actor": "Fernando Silveira",
+          "type": "CONTRAPROPOSTA_ENVIADA",
+          "description": "Contraproposta v2 registrada no valor de R$ 965.000,00."
+        },
+        {
+          "id": "evt-opp-03-4",
+          "timestamp": "2026-10-16T14:00:00.000Z",
+          "actor": "Juliana Ribeiro",
+          "type": "PROPOSTA_ACEITA",
+          "description": "Versão v2 aceita; imóvel passou a Reservado e dossiê DOS-2026-01 foi iniciado."
+        }
+      ]
+    },
+    {
+      "id": "opp-04",
+      "code": "OP-2026-04",
+      "propertyId": "prop-03",
+      "buyerId": "buyer-04",
+      "brokerId": "broker-03",
+      "status": "EM_PROPOSTA",
+      "offerId": "offer-03",
+      "attendanceSummary": "André Vasconcelos formalizou proposta para o Condomínio Piazza Navona — Apto 42 enquanto o imóvel encontra-se reservado em outra negociação.",
+      "createdAt": "2026-10-15T16:30:00.000Z",
+      "updatedAt": "2026-10-17T09:30:00.000Z",
+      "timeline": [
+        {
+          "id": "evt-opp-04-1",
+          "timestamp": "2026-10-15T16:30:00.000Z",
+          "actor": "Eduardo Tavares",
+          "type": "OPORTUNIDADE_CRIADA",
+          "description": "Oportunidade aberta para Condomínio Piazza Navona — Apto 42 (IMO-305)."
+        },
+        {
+          "id": "evt-opp-04-2",
+          "timestamp": "2026-10-17T09:30:00.000Z",
+          "actor": "André Vasconcelos",
+          "type": "PROPOSTA_ENVIADA",
+          "description": "Proposta v1 enviada no valor de R$ 975.000,00 aguardando desfecho da reserva em andamento."
+        }
+      ]
+    },
+    {
+      "id": "opp-05",
+      "code": "OP-2026-05",
+      "propertyId": "prop-01",
+      "buyerId": "buyer-05",
+      "brokerId": "broker-02",
+      "status": "PERDIDA",
+      "lossReason": "Cliente optou por imóvel com metragem superior em outro bairro antes de formalizar proposta.",
+      "attendanceSummary": "Visita presencial realizada ao Edifício Solar dos Ipês — Apto 101, encerrada sem envio de proposta.",
+      "createdAt": "2026-10-10T11:00:00.000Z",
+      "updatedAt": "2026-10-14T17:45:00.000Z",
+      "timeline": [
+        {
+          "id": "evt-opp-05-1",
+          "timestamp": "2026-10-10T11:00:00.000Z",
+          "actor": "Camila Nogueira",
+          "type": "OPORTUNIDADE_CRIADA",
+          "description": "Atendimento convertido em oportunidade para Edifício Solar dos Ipês — Apto 101."
+        },
+        {
+          "id": "evt-opp-05-2",
+          "timestamp": "2026-10-14T17:45:00.000Z",
+          "actor": "Camila Nogueira",
+          "type": "OPORTUNIDADE_PERDIDA",
+          "description": "Negociação encerrada como perdida: cliente priorizou imóvel de maior metragem."
+        }
+      ]
+    },
+    {
+      "id": "opp-06",
+      "code": "OP-2026-06",
+      "propertyId": "prop-04",
+      "buyerId": "buyer-02",
+      "brokerId": "broker-03",
+      "status": "ACEITA",
+      "offerId": "offer-04",
+      "acceptedOfferVersionId": "offer-04-v1",
+      "saleCaseId": "case-02",
+      "attendanceSummary": "Proposta à vista aceita na Casa Alto de Pinheiros; dossiê em diligência aguardando regularização de averbação na matrícula.",
+      "createdAt": "2026-10-11T10:00:00.000Z",
+      "updatedAt": "2026-10-18T11:20:00.000Z",
+      "timeline": [
+        {
+          "id": "evt-opp-06-1",
+          "timestamp": "2026-10-11T10:00:00.000Z",
+          "actor": "Eduardo Tavares",
+          "type": "OPORTUNIDADE_CRIADA",
+          "description": "Oportunidade aberta para Casa Alto de Pinheiros (IMO-412)."
+        },
+        {
+          "id": "evt-opp-06-2",
+          "timestamp": "2026-10-14T15:00:00.000Z",
+          "actor": "Roberto Almeida",
+          "type": "PROPOSTA_ENVIADA",
+          "description": "Proposta v1 à vista enviada no valor de R$ 1.390.000,00."
+        },
+        {
+          "id": "evt-opp-06-3",
+          "timestamp": "2026-10-18T11:20:00.000Z",
+          "actor": "Sérgio Cavalcanti",
+          "type": "PROPOSTA_ACEITA",
+          "description": "Proposta v1 aceita; dossiê DOS-2026-02 iniciado em diligência."
+        }
+      ]
+    },
+    {
+      "id": "opp-07",
+      "code": "OP-2026-07",
+      "propertyId": "prop-02",
+      "buyerId": "buyer-05",
+      "brokerId": "broker-01",
+      "status": "EM_PROPOSTA",
+      "offerId": "offer-05",
+      "attendanceSummary": "Luciana Barros apresentou proposta à vista para a Residência Jardim Europa cujo prazo de validade venceu sem aceite.",
+      "createdAt": "2026-10-05T09:15:00.000Z",
+      "updatedAt": "2026-10-12T23:59:00.000Z",
+      "timeline": [
+        {
+          "id": "evt-opp-07-1",
+          "timestamp": "2026-10-05T09:15:00.000Z",
+          "actor": "Rafael Mendonça",
+          "type": "OPORTUNIDADE_CRIADA",
+          "description": "Oportunidade aberta para Residência Jardim Europa (IMO-218)."
+        },
+        {
+          "id": "evt-opp-07-2",
+          "timestamp": "2026-10-06T14:00:00.000Z",
+          "actor": "Luciana Barros",
+          "type": "PROPOSTA_ENVIADA",
+          "description": "Proposta v1 enviada com validade até 12/10/2026."
+        },
+        {
+          "id": "evt-opp-07-3",
+          "timestamp": "2026-10-12T23:59:00.000Z",
+          "actor": "Sistema",
+          "type": "PROPOSTA_EXPIRADA",
+          "description": "Versão v1 marcada como expirada após vencimento do prazo de validade."
+        }
+      ]
+    },
+    {
+      "id": "opp-08",
+      "code": "OP-2026-08",
+      "propertyId": "prop-05",
+      "buyerId": "buyer-04",
+      "brokerId": "broker-02",
+      "status": "ACEITA",
+      "offerId": "offer-06",
+      "acceptedOfferVersionId": "offer-06-v1",
+      "saleCaseId": "case-03",
+      "attendanceSummary": "Negociação do Edifício Mirante do Parque — Apto 802 em etapa cartorial, com compromisso e instrumento bancário concluídos aguardando cumprimento de nota devolutiva.",
+      "createdAt": "2026-09-25T10:00:00.000Z",
+      "updatedAt": "2026-10-02T16:00:00.000Z",
+      "timeline": [
+        {
+          "id": "evt-opp-08-1",
+          "timestamp": "2026-09-25T10:00:00.000Z",
+          "actor": "Camila Nogueira",
+          "type": "OPORTUNIDADE_CRIADA",
+          "description": "Oportunidade registrada para Edifício Mirante do Parque — Apto 802 (IMO-509)."
+        },
+        {
+          "id": "evt-opp-08-2",
+          "timestamp": "2026-09-28T11:30:00.000Z",
+          "actor": "André Vasconcelos",
+          "type": "PROPOSTA_ENVIADA",
+          "description": "Proposta v1 enviada no valor de R$ 750.000,00 com financiamento bancário."
+        },
+        {
+          "id": "evt-opp-08-3",
+          "timestamp": "2026-10-02T16:00:00.000Z",
+          "actor": "Carlos Eduardo Peixoto",
+          "type": "PROPOSTA_ACEITA",
+          "description": "Proposta v1 aceita; dossiê DOS-2026-03 aberto."
+        }
+      ]
+    }
+  ],
+  "offers": [
+    {
+      "id": "offer-01",
+      "opportunityId": "opp-02",
+      "propertyId": "prop-02",
+      "buyerId": "buyer-02",
+      "versions": [
+        {
+          "id": "offer-01-v1",
+          "offerId": "offer-01",
+          "versionNumber": 1,
+          "authorRole": "COMPRADOR",
+          "status": "REJEITADA",
+          "amount": 1150000,
+          "downPaymentAmount": 1150000,
+          "financingAmount": 0,
+          "paymentModality": "A_VISTA",
+          "validUntil": "2026-10-25",
+          "conditions": "Pagamento integral na lavratura da escritura pública após aprovação da diligência documental.",
+          "expectedCommissionAmount": 69000,
+          "immutableAfterSend": true,
+          "createdAt": "2026-10-19T11:00:00.000Z",
+          "respondedAt": "2026-10-20T16:10:00.000Z",
+          "decisionNote": "Coproprietários solicitaram revisão para patamar acima de R$ 1.200.000,00."
+        },
+        {
+          "id": "offer-01-v2",
+          "offerId": "offer-01",
+          "versionNumber": 2,
+          "authorRole": "COMPRADOR",
+          "status": "ENVIADA",
+          "amount": 1210000,
+          "downPaymentAmount": 1210000,
+          "financingAmount": 0,
+          "paymentModality": "A_VISTA",
+          "validUntil": "2026-11-05",
+          "conditions": "Pagamento à vista condicionado à apresentação das certidões negativas dos dois coproprietários.",
+          "expectedCommissionAmount": 72600,
+          "immutableAfterSend": true,
+          "createdAt": "2026-10-22T15:20:00.000Z"
+        }
+      ]
+    },
+    {
+      "id": "offer-02",
+      "opportunityId": "opp-03",
+      "propertyId": "prop-03",
+      "buyerId": "buyer-03",
+      "versions": [
+        {
+          "id": "offer-02-v1",
+          "offerId": "offer-02",
+          "versionNumber": 1,
+          "authorRole": "COMPRADOR",
+          "status": "REJEITADA",
+          "amount": 940000,
+          "downPaymentAmount": 240000,
+          "financingAmount": 700000,
+          "paymentModality": "FINANCIADO",
+          "validUntil": "2026-10-18",
+          "conditions": "Recursos próprios na assinatura do compromisso e saldo via financiamento imobiliário.",
+          "expectedCommissionAmount": 56400,
+          "immutableAfterSend": true,
+          "createdAt": "2026-10-13T14:00:00.000Z",
+          "respondedAt": "2026-10-15T10:00:00.000Z",
+          "decisionNote": "Substituída por contraproposta v2 dos vendedores."
+        },
+        {
+          "id": "offer-02-v2",
+          "offerId": "offer-02",
+          "versionNumber": 2,
+          "authorRole": "VENDEDOR",
+          "status": "ACEITA",
+          "amount": 965000,
+          "downPaymentAmount": 265000,
+          "financingAmount": 700000,
+          "paymentModality": "FINANCIADO",
+          "validUntil": "2026-10-20",
+          "conditions": "Contraproposta mantendo financiamento de R$ 700.000,00 e ajustando recursos próprios iniciais.",
+          "expectedCommissionAmount": 57900,
+          "immutableAfterSend": true,
+          "createdAt": "2026-10-15T10:00:00.000Z",
+          "respondedAt": "2026-10-16T14:00:00.000Z",
+          "decisionNote": "Aceita pela compradora com abertura imediata do dossiê."
+        }
+      ]
+    },
+    {
+      "id": "offer-03",
+      "opportunityId": "opp-04",
+      "propertyId": "prop-03",
+      "buyerId": "buyer-04",
+      "versions": [
+        {
+          "id": "offer-03-v1",
+          "offerId": "offer-03",
+          "versionNumber": 1,
+          "authorRole": "COMPRADOR",
+          "status": "ENVIADA",
+          "amount": 975000,
+          "downPaymentAmount": 300000,
+          "financingAmount": 675000,
+          "paymentModality": "FINANCIADO",
+          "validUntil": "2026-11-10",
+          "conditions": "Proposta concorrente aguardando desfecho da reserva vigente no imóvel IMO-305.",
+          "expectedCommissionAmount": 58500,
+          "immutableAfterSend": true,
+          "createdAt": "2026-10-17T09:30:00.000Z"
+        }
+      ]
+    },
+    {
+      "id": "offer-04",
+      "opportunityId": "opp-06",
+      "propertyId": "prop-04",
+      "buyerId": "buyer-02",
+      "versions": [
+        {
+          "id": "offer-04-v1",
+          "offerId": "offer-04",
+          "versionNumber": 1,
+          "authorRole": "COMPRADOR",
+          "status": "ACEITA",
+          "amount": 1390000,
+          "downPaymentAmount": 1390000,
+          "financingAmount": 0,
+          "paymentModality": "A_VISTA",
+          "validUntil": "2026-10-22",
+          "conditions": "Aceite condicionado à regularidade plena da matrícula e certidões na diligência.",
+          "expectedCommissionAmount": 69500,
+          "immutableAfterSend": true,
+          "createdAt": "2026-10-14T15:00:00.000Z",
+          "respondedAt": "2026-10-18T11:20:00.000Z",
+          "decisionNote": "Aceita pelo proprietário para início da diligência documental."
+        }
+      ]
+    },
+    {
+      "id": "offer-05",
+      "opportunityId": "opp-07",
+      "propertyId": "prop-02",
+      "buyerId": "buyer-05",
+      "versions": [
+        {
+          "id": "offer-05-v1",
+          "offerId": "offer-05",
+          "versionNumber": 1,
+          "authorRole": "COMPRADOR",
+          "status": "EXPIRADA",
+          "amount": 1180000,
+          "downPaymentAmount": 1180000,
+          "financingAmount": 0,
+          "paymentModality": "A_VISTA",
+          "validUntil": "2026-10-12",
+          "conditions": "Proposta à vista com prazo de resposta de 6 dias corridos.",
+          "expectedCommissionAmount": 70800,
+          "immutableAfterSend": true,
+          "createdAt": "2026-10-06T14:00:00.000Z",
+          "decisionNote": "Prazo expirado sem manifestação dos coproprietários."
+        }
+      ]
+    },
+    {
+      "id": "offer-06",
+      "opportunityId": "opp-08",
+      "propertyId": "prop-05",
+      "buyerId": "buyer-04",
+      "versions": [
+        {
+          "id": "offer-06-v1",
+          "offerId": "offer-06",
+          "versionNumber": 1,
+          "authorRole": "COMPRADOR",
+          "status": "ACEITA",
+          "amount": 750000,
+          "downPaymentAmount": 200000,
+          "financingAmount": 550000,
+          "paymentModality": "FINANCIADO",
+          "validUntil": "2026-10-05",
+          "conditions": "Recursos próprios no compromisso e saldo mediante financiamento habitacional aprovado.",
+          "expectedCommissionAmount": 45000,
+          "immutableAfterSend": true,
+          "createdAt": "2026-09-28T11:30:00.000Z",
+          "respondedAt": "2026-10-02T16:00:00.000Z",
+          "decisionNote": "Aceita pelo proprietário."
+        }
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "id": "case-01",
+      "code": "DOS-2026-01",
+      "opportunityId": "opp-03",
+      "propertyId": "prop-03",
+      "buyerId": "buyer-03",
+      "brokerId": "broker-02",
+      "acceptedOfferVersionId": "offer-02-v2",
+      "status": "DILIGENCIA",
+      "checklistVariant": "FINANCIADO",
+      "checklist": [
+        {
+          "id": "chk-01-1",
+          "code": "MATRICULA_ATUALIZADA",
+          "label": "Certidão de matrícula e ônus reais atualizada (30 dias)",
+          "category": "IMOVEL",
+          "required": true,
+          "status": "ACEITO",
+          "updatedAt": "2026-10-17T10:00:00.000Z"
+        },
+        {
+          "id": "chk-01-2",
+          "code": "CERTIDOES_VENDEDORES",
+          "label": "Certidões cíveis, fiscais e trabalhistas dos dois coproprietários",
+          "category": "VENDEDOR",
+          "required": true,
+          "status": "ACEITO",
+          "updatedAt": "2026-10-18T11:00:00.000Z"
+        },
+        {
+          "id": "chk-01-3",
+          "code": "DOCUMENTOS_COMPRADOR",
+          "label": "Documentos pessoais e comprovação de estado civil da compradora",
+          "category": "COMPRADOR",
+          "required": true,
+          "status": "ACEITO",
+          "updatedAt": "2026-10-18T14:00:00.000Z"
+        },
+        {
+          "id": "chk-01-4",
+          "code": "CARTA_CREDITO_FINANCIAMENTO",
+          "label": "Carta de crédito imobiliário aprovada e laudo de engenharia bancária",
+          "category": "FINANCIAMENTO",
+          "required": true,
+          "status": "PENDENTE"
+        }
+      ],
+      "milestones": [
+        {
+          "id": "ms-01-1",
+          "code": "COMPROMISSO_ASSINADO",
+          "label": "Compromisso particular assinado",
+          "stage": "CONTRATACAO",
+          "status": "PENDENTE"
+        },
+        {
+          "id": "ms-01-2",
+          "code": "ESCRITURA_LAVRADA",
+          "label": "Escritura pública ou instrumento com força de escritura lavrado",
+          "stage": "CARTORIO",
+          "status": "PENDENTE"
+        },
+        {
+          "id": "ms-01-3",
+          "code": "TITULO_PROTOCOLADO",
+          "label": "Título protocolado no Registro de Imóveis",
+          "stage": "CARTORIO",
+          "status": "PENDENTE"
+        },
+        {
+          "id": "ms-01-4",
+          "code": "TITULO_REGISTRADO",
+          "label": "Propriedade transferida (registro)",
+          "stage": "CARTORIO",
+          "status": "PENDENTE"
+        },
+        {
+          "id": "ms-01-5",
+          "code": "CHAVES_ENTREGUES",
+          "label": "Entrega de chaves e imissão na posse",
+          "stage": "ENTREGA",
+          "status": "PENDENTE"
+        }
+      ],
+      "blocks": [
+        {
+          "id": "blk-01-1",
+          "type": "AGUARDANDO_FINANCIAMENTO",
+          "title": "Aguardando laudo de engenharia do banco financiador",
+          "description": "Vistoria técnica bancária realizada em 18/10; aguardando emissão do parecer de garantia para liberação contratual.",
+          "active": true,
+          "openedAt": "2026-10-19T09:00:00.000Z"
+        }
+      ],
+      "openedAt": "2026-10-16T14:00:00.000Z",
+      "updatedAt": "2026-10-19T09:00:00.000Z",
+      "timeline": [
+        {
+          "id": "evt-case-01-1",
+          "timestamp": "2026-10-16T14:00:00.000Z",
+          "actor": "Sistema",
+          "type": "DOSSIE_ABERTO",
+          "description": "Dossiê DOS-2026-01 aberto após aceite da contraproposta v2."
+        },
+        {
+          "id": "evt-case-01-2",
+          "timestamp": "2026-10-19T09:00:00.000Z",
+          "actor": "Camila Nogueira",
+          "type": "BLOQUEIO_REGISTRADO",
+          "description": "Pendência de retorno do laudo de engenharia bancária registrada na etapa de diligência."
+        }
+      ]
+    },
+    {
+      "id": "case-02",
+      "code": "DOS-2026-02",
+      "opportunityId": "opp-06",
+      "propertyId": "prop-04",
+      "buyerId": "buyer-02",
+      "brokerId": "broker-03",
+      "acceptedOfferVersionId": "offer-04-v1",
+      "status": "DILIGENCIA",
+      "checklistVariant": "A_VISTA",
+      "checklist": [
+        {
+          "id": "chk-02-1",
+          "code": "MATRICULA_ATUALIZADA",
+          "label": "Certidão de matrícula e ônus reais atualizada (30 dias)",
+          "category": "IMOVEL",
+          "required": true,
+          "status": "PENDENTE"
+        },
+        {
+          "id": "chk-02-2",
+          "code": "CERTIDOES_VENDEDOR",
+          "label": "Certidões cíveis, fiscais e trabalhistas do vendedor",
+          "category": "VENDEDOR",
+          "required": true,
+          "status": "PENDENTE"
+        },
+        {
+          "id": "chk-02-3",
+          "code": "DOCUMENTOS_COMPRADOR",
+          "label": "Documentos pessoais e comprovação de capacidade civil do comprador",
+          "category": "COMPRADOR",
+          "required": true,
+          "status": "ACEITO",
+          "updatedAt": "2026-10-19T15:00:00.000Z"
+        }
+      ],
+      "milestones": [
+        {
+          "id": "ms-02-1",
+          "code": "COMPROMISSO_ASSINADO",
+          "label": "Compromisso particular assinado",
+          "stage": "CONTRATACAO",
+          "status": "PENDENTE"
+        },
+        {
+          "id": "ms-02-2",
+          "code": "ESCRITURA_LAVRADA",
+          "label": "Escritura pública lavrada",
+          "stage": "CARTORIO",
+          "status": "PENDENTE"
+        },
+        {
+          "id": "ms-02-3",
+          "code": "TITULO_PROTOCOLADO",
+          "label": "Título protocolado no Registro de Imóveis",
+          "stage": "CARTORIO",
+          "status": "PENDENTE"
+        },
+        {
+          "id": "ms-02-4",
+          "code": "TITULO_REGISTRADO",
+          "label": "Propriedade transferida (registro)",
+          "stage": "CARTORIO",
+          "status": "PENDENTE"
+        },
+        {
+          "id": "ms-02-5",
+          "code": "CHAVES_ENTREGUES",
+          "label": "Entrega de chaves e imissão na posse",
+          "stage": "ENTREGA",
+          "status": "PENDENTE"
+        }
+      ],
+      "blocks": [
+        {
+          "id": "blk-02-1",
+          "type": "PENDENTE_INFORMACAO",
+          "title": "Divergência de área construída pendente de averbação",
+          "description": "Constatada ampliação de 38 m² no carnê de IPTU ainda não averbada na matrícula nº 67.412; aguardando certidão da prefeitura pelo proprietário.",
+          "active": true,
+          "openedAt": "2026-10-20T10:15:00.000Z"
+        }
+      ],
+      "openedAt": "2026-10-18T11:20:00.000Z",
+      "updatedAt": "2026-10-20T10:15:00.000Z",
+      "timeline": [
+        {
+          "id": "evt-case-02-1",
+          "timestamp": "2026-10-18T11:20:00.000Z",
+          "actor": "Sistema",
+          "type": "DOSSIE_ABERTO",
+          "description": "Dossiê DOS-2026-02 iniciado na modalidade à vista."
+        },
+        {
+          "id": "evt-case-02-2",
+          "timestamp": "2026-10-20T10:15:00.000Z",
+          "actor": "Eduardo Tavares",
+          "type": "BLOQUEIO_REGISTRADO",
+          "description": "Pendência documental aberta para esclarecimento de averbação de área construída."
+        }
+      ]
+    },
+    {
+      "id": "case-03",
+      "code": "DOS-2026-03",
+      "opportunityId": "opp-08",
+      "propertyId": "prop-05",
+      "buyerId": "buyer-04",
+      "brokerId": "broker-02",
+      "acceptedOfferVersionId": "offer-06-v1",
+      "status": "CARTORIO",
+      "checklistVariant": "FINANCIADO",
+      "legalNotice": "Compromisso assinado — a propriedade ainda não foi transferida",
+      "checklist": [
+        {
+          "id": "chk-03-1",
+          "code": "MATRICULA_ATUALIZADA",
+          "label": "Certidão de matrícula e ônus reais atualizada (30 dias)",
+          "category": "IMOVEL",
+          "required": true,
+          "status": "ACEITO",
+          "updatedAt": "2026-10-04T10:00:00.000Z"
+        },
+        {
+          "id": "chk-03-2",
+          "code": "CERTIDOES_VENDEDOR",
+          "label": "Certidões cíveis, fiscais e trabalhistas do vendedor",
+          "category": "VENDEDOR",
+          "required": true,
+          "status": "ACEITO",
+          "updatedAt": "2026-10-05T11:00:00.000Z"
+        },
+        {
+          "id": "chk-03-3",
+          "code": "CERTIDAO_CONDOMINIAL",
+          "label": "Declaração de quitação de débitos condominiais",
+          "category": "IMOVEL",
+          "required": true,
+          "status": "DISPENSADO",
+          "waiverJustification": "Declaração definitiva com firma reconhecida agendada pela administradora para entrega na lavratura.",
+          "updatedAt": "2026-10-06T09:30:00.000Z"
+        },
+        {
+          "id": "chk-03-4",
+          "code": "CONTRATO_FINANCIAMENTO_EMITIDO",
+          "label": "Contrato de financiamento bancário emitido com força de escritura",
+          "category": "FINANCIAMENTO",
+          "required": true,
+          "status": "ACEITO",
+          "updatedAt": "2026-10-10T16:00:00.000Z"
+        }
+      ],
+      "milestones": [
+        {
+          "id": "ms-03-1",
+          "code": "COMPROMISSO_ASSINADO",
+          "label": "Compromisso particular assinado",
+          "stage": "CONTRATACAO",
+          "status": "CONCLUIDO",
+          "completedAt": "2026-10-08T15:00:00.000Z",
+          "notes": "Compromisso assinado — a propriedade ainda não foi transferida."
+        },
+        {
+          "id": "ms-03-2",
+          "code": "ESCRITURA_LAVRADA",
+          "label": "Instrumento bancário com força de escritura pública assinado",
+          "stage": "CARTORIO",
+          "status": "CONCLUIDO",
+          "completedAt": "2026-10-14T14:30:00.000Z"
+        },
+        {
+          "id": "ms-03-3",
+          "code": "TITULO_PROTOCOLADO",
+          "label": "Título protocolado sob prenotação nº 394.812 — 4º CRI/SP",
+          "stage": "CARTORIO",
+          "status": "CONCLUIDO",
+          "completedAt": "2026-10-16T11:00:00.000Z"
+        },
+        {
+          "id": "ms-03-4",
+          "code": "TITULO_REGISTRADO",
+          "label": "Propriedade transferida (registro)",
+          "stage": "CARTORIO",
+          "status": "PENDENTE"
+        },
+        {
+          "id": "ms-03-5",
+          "code": "CHAVES_ENTREGUES",
+          "label": "Entrega de chaves e imissão na posse",
+          "stage": "ENTREGA",
+          "status": "PENDENTE"
+        }
+      ],
+      "blocks": [
+        {
+          "id": "blk-03-1",
+          "type": "EXIGENCIA_CARTORIAL",
+          "title": "Nota devolutiva do 4º Oficial de Registro de Imóveis",
+          "description": "Exigida certidão de valor venal de referência atualizada para conferência da guia de recolhimento antes do registro.",
+          "active": true,
+          "openedAt": "2026-10-21T13:40:00.000Z"
+        }
+      ],
+      "openedAt": "2026-10-02T16:00:00.000Z",
+      "updatedAt": "2026-10-21T13:40:00.000Z",
+      "timeline": [
+        {
+          "id": "evt-case-03-1",
+          "timestamp": "2026-10-02T16:00:00.000Z",
+          "actor": "Sistema",
+          "type": "DOSSIE_ABERTO",
+          "description": "Dossiê DOS-2026-03 aberto após aceite da proposta."
+        },
+        {
+          "id": "evt-case-03-2",
+          "timestamp": "2026-10-08T15:00:00.000Z",
+          "actor": "Camila Nogueira",
+          "type": "MARCO_CONCLUIDO",
+          "description": "Compromisso assinado — a propriedade ainda não foi transferida; imóvel passou a Sob contrato."
+        },
+        {
+          "id": "evt-case-03-3",
+          "timestamp": "2026-10-14T14:30:00.000Z",
+          "actor": "Camila Nogueira",
+          "type": "MARCO_CONCLUIDO",
+          "description": "Instrumento assinado pelas partes e encaminhado para protocolo registral."
+        },
+        {
+          "id": "evt-case-03-4",
+          "timestamp": "2026-10-16T11:00:00.000Z",
+          "actor": "Camila Nogueira",
+          "type": "MARCO_CONCLUIDO",
+          "description": "Título protocolado no 4º Oficial de Registro de Imóveis sob prenotação nº 394.812."
+        },
+        {
+          "id": "evt-case-03-5",
+          "timestamp": "2026-10-21T13:40:00.000Z",
+          "actor": "Helena Vasconcelos",
+          "type": "BLOQUEIO_REGISTRADO",
+          "description": "Nota devolutiva registrada aguardando juntada de certidão municipal e reapresentação."
+        }
+      ]
+    }
+  ]
+}
