@@ -8,6 +8,8 @@ import {
   ArrowRight,
   Check,
   CheckCircle2,
+  ChevronRight,
+  Circle,
   ClipboardCheck,
   Clock,
   FileWarning,
@@ -23,10 +25,10 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { IconButton } from "@/components/ui/icon-button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { ActionDialog } from "@/features/sales-poc/components/action-dialog";
@@ -109,6 +111,9 @@ export function SaleCaseDetailPanel({
   const [newBlockDesc, setNewBlockDesc] = React.useState("");
   const [newBlockError, setNewBlockError] = React.useState<string | null>(null);
 
+  const [resolvingBlockId, setResolvingBlockId] = React.useState<string | null>(
+    null,
+  );
   const [resolutionNotes, setResolutionNotes] = React.useState<
     Record<string, string>
   >({});
@@ -272,6 +277,7 @@ export function SaleCaseDetailPanel({
     }
 
     setResolutionNotes((prev) => ({ ...prev, [blockId]: "" }));
+    setResolvingBlockId(null);
     setFeedback({
       kind: "success",
       message: "Pendência resolvida.",
@@ -356,50 +362,52 @@ export function SaleCaseDetailPanel({
 
   return (
     <div data-testid="sale-case-detail-panel" className="space-y-5">
-      {/* Cabeçalho enxuto */}
+      {/* Breadcrumb + cabeçalho contextual único */}
       <div className="flex flex-wrap items-start justify-between gap-4 border-b border-border pb-4">
         <div className="space-y-1">
-          <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+          <nav
+            aria-label="Navegação"
+            className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground"
+          >
             <Button
               type="button"
               variant="ghost"
               size="xs"
               onClick={onBackToBoard}
               data-testid="back-to-board-from-case-btn"
-              className="-ml-2"
+              className="-ml-2 text-muted-foreground hover:text-foreground"
             >
-              <ArrowLeft className="h-3.5 w-3.5" />
-              Voltar ao Kanban
+              <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
+              Gestão de vendas
             </Button>
-            <span aria-hidden="true">·</span>
-            <span className="font-mono">{saleCase.code}</span>
+            <ChevronRight className="h-3.5 w-3.5 opacity-60" aria-hidden="true" />
+            <span>{saleCase.code}</span>
             <Badge
               variant={
                 saleCase.status === "CONCLUIDO"
                   ? "success"
                   : saleCase.status === "CANCELADO"
                     ? "error"
-                    : "teal"
+                    : "info"
               }
               dot
               data-testid="case-stage-badge"
             >
               {SALE_CASE_STATUS_LABELS[saleCase.status]}
             </Badge>
-          </div>
+          </nav>
 
-          <h2 className="text-xl font-bold">{property.title}</h2>
+          <h1 className="text-xl font-bold tracking-tight">{property.title}</h1>
 
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
-            <span>Comprador: {buyer.name}</span>
+            <span>{buyer.name}</span>
             <span aria-hidden="true">·</span>
             <span>{PAYMENT_MODALITY_LABELS[saleCase.checklistVariant]}</span>
             {acceptedVersion && (
               <>
                 <span aria-hidden="true">·</span>
-                <span className="font-medium text-foreground">
-                  {formatCurrencyBRL(acceptedVersion.amount)} (v
-                  {acceptedVersion.versionNumber})
+                <span className="font-semibold tabular-nums text-foreground">
+                  {formatCurrencyBRL(acceptedVersion.amount)}
                 </span>
               </>
             )}
@@ -417,12 +425,23 @@ export function SaleCaseDetailPanel({
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-1.5">
+          <Button
+            type="button"
+            variant="ghost"
+            size="xs"
+            onClick={() => onOpenOpportunity(opportunity.id)}
+            data-testid="open-origin-opportunity-btn"
+            className="text-muted-foreground hover:text-foreground"
+          >
+            Ver proposta ({opportunity.code})
+          </Button>
+
           {!isTerminal && (
             <Button
               type="button"
               variant="outline"
-              size="sm"
+              size="xs"
               onClick={() => {
                 setFeedback(null);
                 setNewBlockError(null);
@@ -430,26 +449,16 @@ export function SaleCaseDetailPanel({
               }}
               data-testid="toggle-new-block-form-btn"
             >
-              <Plus className="h-4 w-4" />
+              <Plus className="h-3.5 w-3.5" aria-hidden="true" />
               Registrar pendência
             </Button>
           )}
 
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => onOpenOpportunity(opportunity.id)}
-            data-testid="open-origin-opportunity-btn"
-          >
-            Oportunidade {opportunity.code}
-          </Button>
-
           {!isTerminal && !isTitleRegistered && (
             <Button
               type="button"
-              variant="outline"
-              size="sm"
+              variant="ghost"
+              size="xs"
               onClick={() => {
                 setFeedback(null);
                 setCancelReason("");
@@ -457,8 +466,9 @@ export function SaleCaseDetailPanel({
                 setCancelDialogOpen(true);
               }}
               data-testid="toggle-cancel-case-btn"
+              className="text-muted-foreground hover:text-[var(--error-fg)]"
             >
-              <XCircle className="h-4 w-4" />
+              <XCircle className="h-3.5 w-3.5" aria-hidden="true" />
               Cancelar dossiê
             </Button>
           )}
@@ -477,73 +487,88 @@ export function SaleCaseDetailPanel({
           }
         >
           {feedback.kind === "error" ? (
-            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
           ) : (
-            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
           )}
           <div>{feedback.message}</div>
         </div>
       )}
 
-      {/* Bloco unificado: Etapas até o registro + status de propriedade (§4.5) + pendências ativas */}
+      {/* Trilha linear limpa (sem 6 caixas) + aviso jurídico contextual */}
       <Card data-testid="case-progress-bar">
         <CardContent className="space-y-3 p-4">
-          <ol className="grid gap-2 sm:grid-cols-3 lg:grid-cols-6">
+          <ol className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-6 lg:gap-3">
             {steps.map((step, idx) => (
               <li
                 key={step.key}
-                className={cn(
-                  "flex items-center gap-2 rounded-lg border px-2.5 py-2 text-xs",
-                  step.done &&
-                    "border-[var(--color-success-200)] bg-[var(--success-subtle)]/70 text-[var(--success-fg)]",
-                  step.current &&
-                    "border-primary bg-[var(--accent-subtle)]/40 font-semibold text-foreground ring-1 ring-primary/30",
-                  !step.done &&
-                    !step.current &&
-                    "border-border bg-secondary/25 text-muted-foreground",
-                )}
+                className="flex items-center gap-2 text-xs lg:flex-col lg:items-start lg:gap-1.5"
               >
+                <div className="flex items-center gap-2 lg:w-full">
+                  <span
+                    className={cn(
+                      "flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs font-semibold tabular-nums",
+                      step.done && "bg-[var(--success-fg)] text-white",
+                      step.current && "bg-primary text-primary-foreground",
+                      !step.done &&
+                        !step.current &&
+                        "border border-border bg-secondary/60 text-muted-foreground",
+                    )}
+                  >
+                    {step.done ? (
+                      <Check className="h-3 w-3" aria-hidden="true" />
+                    ) : (
+                      idx + 1
+                    )}
+                  </span>
+                  {idx < steps.length - 1 && (
+                    <span
+                      aria-hidden="true"
+                      className={cn(
+                        "hidden h-px flex-1 lg:block",
+                        step.done ? "bg-[var(--success-fg)]/50" : "bg-border",
+                      )}
+                    />
+                  )}
+                </div>
                 <span
                   className={cn(
-                    "flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] font-bold",
-                    step.done && "bg-[var(--success-fg)] text-white",
-                    step.current && "bg-primary text-primary-foreground",
-                    !step.done &&
-                      !step.current &&
-                      "bg-secondary text-muted-foreground",
+                    "leading-snug",
+                    step.done && "font-medium text-[var(--success-fg)]",
+                    step.current && "font-semibold text-foreground",
+                    !step.done && !step.current && "text-muted-foreground",
                   )}
                 >
-                  {step.done ? <Check className="h-3 w-3" /> : idx + 1}
+                  {step.shortLabel}
                 </span>
-                <span className="leading-tight">{step.shortLabel}</span>
               </li>
             ))}
           </ol>
 
-          {/* Aviso jurídico único e contextual (§4.5 / AC9) */}
+          {/* Legenda jurídica integrada (§4.5 / AC9) */}
           <div
             data-testid="case-legal-banner"
             className={cn(
-              "flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs",
+              "flex items-center gap-2 text-xs",
               saleCase.status === "CANCELADO"
-                ? "bg-[var(--error-subtle)] text-[var(--error-fg)]"
+                ? "rounded-lg bg-[var(--error-subtle)] px-3 py-2 text-[var(--error-fg)]"
                 : isTitleRegistered
-                  ? "bg-[var(--success-subtle)] text-[var(--success-fg)]"
+                  ? "rounded-lg bg-[var(--success-subtle)] px-3 py-2 text-[var(--success-fg)]"
                   : isCommitmentDone
-                    ? "bg-[var(--amber-subtle)] text-[var(--amber-fg)]"
-                    : "bg-secondary/50 text-muted-foreground",
+                    ? "rounded-lg bg-[var(--amber-subtle)] px-3 py-2 text-[var(--amber-fg)]"
+                    : "border-t border-border/70 pt-2.5 text-muted-foreground",
             )}
           >
             {isTitleRegistered ? (
-              <CheckCircle2 className="h-4 w-4 shrink-0" />
+              <CheckCircle2 className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
             ) : (
-              <ShieldAlert className="h-4 w-4 shrink-0" />
+              <ShieldAlert className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
             )}
             <p>
               {saleCase.status === "CANCELADO" ? (
                 <>
                   <strong className="font-semibold">Dossiê cancelado</strong> —
-                  imóvel {property.code} voltou para Disponível. Motivo:{" "}
+                  imóvel voltou para Disponível. Motivo:{" "}
                   {saleCase.cancellationReason}
                 </>
               ) : isTitleRegistered ? (
@@ -564,74 +589,104 @@ export function SaleCaseDetailPanel({
                 </>
               ) : (
                 <>
-                  <strong className="font-semibold text-foreground">
-                    Imóvel reservado — a propriedade ainda não foi transferida.
-                  </strong>{" "}
-                  Conclua a análise documental para seguir à assinatura do
-                  compromisso.
+                  Imóvel reservado — a propriedade ainda não foi transferida.
                 </>
               )}
             </p>
           </div>
 
-          {/* Pendências ativas aparecem somente quando existem */}
+          {/* Pendências ativas: faixa compacta com formulário sob demanda */}
           {activeBlocks.length > 0 && (
             <div
               data-testid="transversal-blocks-panel"
-              className="space-y-2 border-t border-border pt-3"
+              className="space-y-2 border-t border-border/70 pt-3"
             >
-              {activeBlocks.map((block) => (
-                <div
-                  key={block.id}
-                  data-testid={`block-card-${block.type}-active`}
-                  className="rounded-lg border border-[var(--color-amber-400)] bg-[var(--amber-subtle)]/50 p-3 text-xs"
-                >
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <Badge variant="warning">
-                        <AlertTriangle className="h-3 w-3" />
-                        {TRANSVERSAL_BLOCK_LABELS[block.type]}
-                      </Badge>
-                      <span className="font-semibold text-foreground">
-                        {block.title}
-                      </span>
-                      <span className="text-muted-foreground">
-                        — {block.description}
-                      </span>
-                    </div>
-                    <span className="font-medium text-[var(--error-fg)]">
-                      Impede avanço
-                    </span>
-                  </div>
+              {activeBlocks.map((block) => {
+                const isResolving = resolvingBlockId === block.id;
 
-                  {!isTerminal && (
-                    <div className="mt-2.5 flex flex-col gap-2 sm:flex-row">
-                      <input
-                        type="text"
-                        value={resolutionNotes[block.id] ?? ""}
-                        onChange={(e) =>
-                          setResolutionNotes((prev) => ({
-                            ...prev,
-                            [block.id]: e.target.value,
-                          }))
-                        }
-                        placeholder="Descreva a regularização para liberar o avanço..."
-                        data-testid={`resolve-block-input-${block.id}`}
-                        className="h-8 flex-1 rounded-md border border-input bg-card px-2.5 text-xs text-foreground"
-                      />
-                      <Button
-                        type="button"
-                        size="xs"
-                        onClick={() => handleResolveBlock(block.id)}
-                        data-testid={`resolve-block-btn-${block.id}`}
-                      >
-                        <CheckCircle2 className="h-3.5 w-3.5" />
-                        Resolver pendência
-                      </Button>
+                return (
+                  <div
+                    key={block.id}
+                    data-testid={`block-card-${block.type}-active`}
+                    className="rounded-lg border border-[var(--color-amber-400)]/70 bg-[var(--amber-subtle)]/55 px-3.5 py-2.5 text-xs"
+                  >
+                    <div className="flex flex-wrap items-start justify-between gap-2 sm:items-center">
+                      <div className="flex min-w-0 flex-1 items-start gap-2">
+                        <AlertTriangle
+                          className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[var(--amber-fg)]"
+                          aria-hidden="true"
+                        />
+                        <p className="min-w-0">
+                          <span className="font-semibold text-foreground">
+                            {block.title}
+                          </span>
+                          <span className="text-muted-foreground">
+                            {" "}
+                            · {TRANSVERSAL_BLOCK_LABELS[block.type]} —{" "}
+                            {block.description}
+                          </span>
+                        </p>
+                      </div>
+
+                      {!isTerminal && !isResolving && (
+                        <Button
+                          type="button"
+                          size="xs"
+                          variant="outline"
+                          onClick={() => {
+                            setFeedback(null);
+                            setResolvingBlockId(block.id);
+                          }}
+                          data-testid={`open-resolve-block-${block.id}`}
+                        >
+                          Resolver
+                        </Button>
+                      )}
                     </div>
-                  )}
-                </div>
-              ))}
+
+                    {!isTerminal && isResolving && (
+                      <div className="mt-2.5 flex flex-col gap-2 sm:flex-row">
+                        <input
+                          type="text"
+                          value={resolutionNotes[block.id] ?? ""}
+                          onChange={(e) =>
+                            setResolutionNotes((prev) => ({
+                              ...prev,
+                              [block.id]: e.target.value,
+                            }))
+                          }
+                          placeholder="Descreva a regularização para liberar o avanço..."
+                          data-testid={`resolve-block-input-${block.id}`}
+                          className="h-8 flex-1 rounded-md border border-input bg-card px-2.5 text-xs text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                          autoFocus
+                        />
+                        <div className="flex items-center gap-1.5">
+                          <Button
+                            type="button"
+                            size="xs"
+                            onClick={() => handleResolveBlock(block.id)}
+                            data-testid={`resolve-block-btn-${block.id}`}
+                          >
+                            <CheckCircle2
+                              className="h-3.5 w-3.5"
+                              aria-hidden="true"
+                            />
+                            Confirmar
+                          </Button>
+                          <Button
+                            type="button"
+                            size="xs"
+                            variant="ghost"
+                            onClick={() => setResolvingBlockId(null)}
+                          >
+                            Cancelar
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           )}
         </CardContent>
@@ -641,16 +696,25 @@ export function SaleCaseDetailPanel({
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList>
           <TabsTrigger value="checklist" data-testid="case-tab-checklist">
-            <ClipboardCheck className="h-4 w-4" />
-            Checklist ({resolvedChecklistCount}/{saleCase.checklist.length})
+            <ClipboardCheck
+              className="hidden h-4 w-4 sm:block"
+              aria-hidden="true"
+            />
+            <span className="tabular-nums">
+              Checklist ({resolvedChecklistCount}/{saleCase.checklist.length})
+            </span>
           </TabsTrigger>
           <TabsTrigger value="milestones" data-testid="case-tab-milestones">
-            <Flag className="h-4 w-4" />
-            Marcos ({completedMilestonesCount}/{saleCase.milestones.length})
+            <Flag className="hidden h-4 w-4 sm:block" aria-hidden="true" />
+            <span className="tabular-nums">
+              Marcos ({completedMilestonesCount}/{saleCase.milestones.length})
+            </span>
           </TabsTrigger>
           <TabsTrigger value="timeline" data-testid="case-tab-timeline">
-            <Clock className="h-4 w-4" />
-            Histórico ({saleCase.timeline.length})
+            <Clock className="hidden h-4 w-4 sm:block" aria-hidden="true" />
+            <span className="tabular-nums">
+              Histórico ({saleCase.timeline.length})
+            </span>
           </TabsTrigger>
         </TabsList>
 
@@ -658,16 +722,12 @@ export function SaleCaseDetailPanel({
           <Card>
             <CardHeader className="pb-3">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <div>
-                  <CardTitle className="text-base">
-                    Documentos da venda (
-                    {PAYMENT_MODALITY_LABELS[saleCase.checklistVariant]})
-                  </CardTitle>
-                  <CardDescription>
-                    Todos os itens devem ser aceitos ou dispensados com
-                    justificativa para liberar a contratação.
-                  </CardDescription>
-                </div>
+                <CardTitle className="text-base">
+                  Documentos da venda ·{" "}
+                  <span className="font-normal text-muted-foreground">
+                    {PAYMENT_MODALITY_LABELS[saleCase.checklistVariant]}
+                  </span>
+                </CardTitle>
 
                 <Button
                   type="button"
@@ -677,7 +737,7 @@ export function SaleCaseDetailPanel({
                   data-testid="inert-edit-checklist-btn"
                   className="text-muted-foreground"
                 >
-                  <Lock className="h-3.5 w-3.5" />
+                  <Lock className="h-3 w-3" aria-hidden="true" />
                   Editar checklist
                 </Button>
               </div>
@@ -694,55 +754,83 @@ export function SaleCaseDetailPanel({
             </CardHeader>
 
             <CardContent className="space-y-3">
-              <div className="divide-y divide-border rounded-xl border border-border">
+              <div className="divide-y divide-border/80 rounded-xl border border-border">
                 {saleCase.checklist.map((item) => {
                   const canEditItem =
                     !isTerminal && saleCase.status === "DILIGENCIA";
                   const isPending = item.status === "PENDENTE";
+                  const isAcceptedOrWaived =
+                    item.status === "ACEITO" || item.status === "DISPENSADO";
 
                   return (
                     <div
                       key={item.id}
                       data-testid={`checklist-item-${item.code}`}
-                      className="flex flex-col gap-2.5 p-3.5 sm:flex-row sm:items-center sm:justify-between"
+                      className="flex flex-col gap-2 px-3.5 py-3 sm:flex-row sm:items-center sm:justify-between"
                     >
-                      <div className="min-w-0 space-y-0.5">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="text-sm font-medium text-foreground">
-                            {item.label}
-                          </span>
-                          <span className="text-xs text-muted-foreground">
-                            · {CHECKLIST_CATEGORY_LABELS[item.category]}
-                          </span>
-                        </div>
-                        {item.waiverJustification && (
-                          <p className="text-xs text-muted-foreground">
-                            Justificativa: {item.waiverJustification}
-                          </p>
+                      <div className="flex min-w-0 items-start gap-2.5">
+                        {isAcceptedOrWaived ? (
+                          <CheckCircle2
+                            className="mt-0.5 h-4 w-4 shrink-0 text-[var(--success-fg)]"
+                            aria-hidden="true"
+                          />
+                        ) : item.status === "REPROVADO" ? (
+                          <XCircle
+                            className="mt-0.5 h-4 w-4 shrink-0 text-[var(--error-fg)]"
+                            aria-hidden="true"
+                          />
+                        ) : (
+                          <Circle
+                            className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground/60"
+                            aria-hidden="true"
+                          />
                         )}
+                        <div className="min-w-0 space-y-0.5">
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            <span className="text-sm font-medium text-foreground">
+                              {item.label}
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              · {CHECKLIST_CATEGORY_LABELS[item.category]}
+                            </span>
+                          </div>
+                          {item.waiverJustification && (
+                            <p className="text-xs text-muted-foreground">
+                              Dispensa: {item.waiverJustification}
+                            </p>
+                          )}
+                        </div>
                       </div>
 
-                      <div className="flex shrink-0 flex-wrap items-center gap-2">
-                        <Badge
-                          variant={
-                            item.status === "ACEITO"
-                              ? "success"
-                              : item.status === "DISPENSADO"
-                                ? "teal"
-                                : item.status === "REPROVADO"
-                                  ? "error"
-                                  : "secondary"
-                          }
-                          data-testid={`checklist-status-${item.code}`}
-                        >
-                          {CHECKLIST_STATUS_LABELS[item.status]}
-                        </Badge>
+                      <div className="flex shrink-0 flex-wrap items-center gap-1.5 pl-6 sm:pl-0">
+                        {isPending ? (
+                          <span
+                            data-testid={`checklist-status-${item.code}`}
+                            className="sr-only"
+                          >
+                            {CHECKLIST_STATUS_LABELS[item.status]}
+                          </span>
+                        ) : (
+                          <Badge
+                            variant={
+                              item.status === "ACEITO"
+                                ? "success"
+                                : item.status === "DISPENSADO"
+                                  ? "secondary"
+                                  : "error"
+                            }
+                            data-testid={`checklist-status-${item.code}`}
+                          >
+                            {CHECKLIST_STATUS_LABELS[item.status]}
+                          </Badge>
+                        )}
 
                         {canEditItem && isPending && (
                           <>
                             <Button
                               type="button"
                               size="xs"
+                              variant="outline"
                               onClick={() =>
                                 handleChecklistAction(item.id, "ACEITO")
                               }
@@ -754,7 +842,7 @@ export function SaleCaseDetailPanel({
                             <Button
                               type="button"
                               size="xs"
-                              variant="outline"
+                              variant="ghost"
                               onClick={() => {
                                 setFeedback(null);
                                 setWaiverJustification("");
@@ -762,40 +850,34 @@ export function SaleCaseDetailPanel({
                                 setWaivingItem(item);
                               }}
                               data-testid={`waive-checklist-toggle-${item.code}`}
+                              className="text-muted-foreground"
                             >
                               Dispensar
                             </Button>
 
-                            <Button
-                              type="button"
-                              size="xs"
-                              variant="ghost"
+                            <IconButton
+                              tooltip="Reprovar documento"
                               onClick={() =>
                                 handleChecklistAction(item.id, "REPROVADO")
                               }
                               data-testid={`reprove-checklist-btn-${item.code}`}
-                              className="text-muted-foreground hover:text-[var(--error-fg)]"
+                              className="hover:text-[var(--error-fg)]"
                             >
                               <FileWarning className="h-3.5 w-3.5" />
-                              Reprovar
-                            </Button>
+                            </IconButton>
                           </>
                         )}
 
                         {canEditItem && !isPending && (
-                          <Button
-                            type="button"
-                            size="xs"
-                            variant="ghost"
+                          <IconButton
+                            tooltip="Desfazer conferência"
                             onClick={() =>
                               handleChecklistAction(item.id, "PENDENTE")
                             }
                             data-testid={`reset-checklist-btn-${item.code}`}
-                            className="text-muted-foreground"
                           >
-                            <RotateCcw className="h-3 w-3" />
-                            Desfazer
-                          </Button>
+                            <RotateCcw className="h-3.5 w-3.5" />
+                          </IconButton>
                         )}
                       </div>
                     </div>
@@ -804,11 +886,11 @@ export function SaleCaseDetailPanel({
               </div>
 
               {saleCase.status === "DILIGENCIA" && !isTerminal && (
-                <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-secondary/40 px-4 py-3">
+                <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
                   <span className="text-xs text-muted-foreground">
                     {checklistReady && activeBlocks.length === 0
-                      ? "Documentação conferida e sem pendências: pronto para Contratação."
-                      : "Conclua os itens pendentes e regularize eventuais pendências antes de avançar."}
+                      ? "Documentação conferida e sem pendências."
+                      : "Aceite ou dispense os itens pendentes para liberar a contratação."}
                   </span>
                   <Button
                     type="button"
@@ -831,17 +913,14 @@ export function SaleCaseDetailPanel({
               <CardTitle className="text-base">
                 Marcos de contratação, cartório e entrega
               </CardTitle>
-              <CardDescription>
-                Registre cada etapa na ordem em que ocorre até o registro na
-                matrícula e a entrega das chaves.
-              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               {saleCase.status === "DILIGENCIA" && !isTerminal && (
-                <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-secondary/40 px-4 py-3 text-xs">
-                  <span>
-                    Conclua primeiro a etapa de <strong>Diligência</strong> na
-                    aba Checklist para liberar a assinatura do compromisso.
+                <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-secondary/40 px-3.5 py-2.5 text-xs">
+                  <span className="text-muted-foreground">
+                    Conclua primeiro a etapa de{" "}
+                    <strong className="text-foreground">Diligência</strong> para
+                    liberar a assinatura do compromisso.
                   </span>
                   <Button
                     type="button"
@@ -854,7 +933,7 @@ export function SaleCaseDetailPanel({
                 </div>
               )}
 
-              <div className="divide-y divide-border rounded-xl border border-border">
+              <div className="divide-y divide-border/80 rounded-xl border border-border">
                 {saleCase.milestones.map((ms, index) => {
                   const isDone = ms.status === "CONCLUIDO";
                   const isNext =
@@ -871,38 +950,53 @@ export function SaleCaseDetailPanel({
                       key={ms.id}
                       data-testid={`milestone-card-${ms.code}`}
                       className={cn(
-                        "flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between",
+                        "flex flex-col gap-3 px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between",
                         isNext && "bg-[var(--accent-subtle)]/20",
                       )}
                     >
-                      <div className="space-y-0.5">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="text-xs font-semibold text-muted-foreground">
-                            {index + 1}.
-                          </span>
-                          <span className="text-sm font-semibold text-foreground">
-                            {displayLabel}
-                          </span>
-                          {isDone && (
-                            <Badge variant="success">Concluído</Badge>
+                      <div className="flex items-start gap-2.5">
+                        <span
+                          className={cn(
+                            "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs font-semibold tabular-nums",
+                            isDone && "bg-[var(--success-fg)] text-white",
+                            isNext && "bg-primary text-primary-foreground",
+                            !isDone &&
+                              !isNext &&
+                              "border border-border bg-secondary/50 text-muted-foreground",
                           )}
-                          {isNext && (
-                            <Badge variant="primary">Próximo passo</Badge>
+                        >
+                          {isDone ? <Check className="h-3 w-3" /> : index + 1}
+                        </span>
+                        <div className="space-y-0.5">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span
+                              className={cn(
+                                "text-sm font-medium",
+                                !isDone && !isNext
+                                  ? "text-muted-foreground"
+                                  : "text-foreground",
+                              )}
+                            >
+                              {displayLabel}
+                            </span>
+                            {isDone && (
+                              <Badge variant="success">Concluído</Badge>
+                            )}
+                          </div>
+                          {ms.completedAt && (
+                            <p className="text-xs text-muted-foreground">
+                              Registrado em {formatDateTime(ms.completedAt)}
+                            </p>
+                          )}
+                          {ms.notes && (
+                            <p className="text-xs text-muted-foreground">
+                              {ms.notes}
+                            </p>
                           )}
                         </div>
-                        {ms.completedAt && (
-                          <p className="text-xs text-muted-foreground">
-                            Registrado em {formatDateTime(ms.completedAt)}
-                          </p>
-                        )}
-                        {ms.notes && (
-                          <p className="text-xs text-muted-foreground">
-                            {ms.notes}
-                          </p>
-                        )}
                       </div>
 
-                      {isNext ? (
+                      {isNext && (
                         <Button
                           type="button"
                           size="sm"
@@ -911,13 +1005,6 @@ export function SaleCaseDetailPanel({
                         >
                           Registrar conclusão
                         </Button>
-                      ) : (
-                        !isDone &&
-                        !isTerminal && (
-                          <span className="text-xs text-muted-foreground">
-                            Aguarda etapa anterior
-                          </span>
-                        )
                       )}
                     </div>
                   );
@@ -938,7 +1025,7 @@ export function SaleCaseDetailPanel({
               {resolvedBlocks.length > 0 && (
                 <div className="space-y-1.5 rounded-lg bg-secondary/30 p-3 text-xs">
                   <p className="font-semibold text-foreground">
-                    Pendências já regularizadas ({resolvedBlocks.length})
+                    Pendências regularizadas ({resolvedBlocks.length})
                   </p>
                   {resolvedBlocks.map((block) => (
                     <p
@@ -953,11 +1040,11 @@ export function SaleCaseDetailPanel({
                 </div>
               )}
 
-              <ol className="space-y-2.5 border-l-2 border-border pl-4 text-xs">
+              <ol className="space-y-2 border-l border-border pl-3.5 text-xs">
                 {[...saleCase.timeline].reverse().map((event) => (
                   <li key={event.id} className="space-y-0.5">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-semibold text-foreground">
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <span className="font-medium text-foreground">
                         {event.actor}
                       </span>
                       <span className="text-muted-foreground">
@@ -1033,7 +1120,7 @@ export function SaleCaseDetailPanel({
           if (!open) setNewBlockError(null);
         }}
         title="Registrar pendência no dossiê"
-        description="A pendência sinaliza o card no Kanban e suspende o avanço até ser resolvida, mantendo o dossiê na etapa atual."
+        description="A pendência sinaliza o card no Kanban e suspende o avanço até ser resolvida."
         confirmLabel="Registrar pendência"
         confirmTestId="submit-new-block-btn"
         error={newBlockError}

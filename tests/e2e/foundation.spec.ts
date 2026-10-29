@@ -68,17 +68,18 @@ test.describe("Fundação U1 — Módulo Gestão de Vendas", () => {
 
     const summary = page.getByTestId("fixture-summary");
     await expect(summary).toBeVisible();
-    await expect(page.getByTestId("summary-properties-count")).toHaveText("6");
-    await expect(page.getByTestId("summary-opportunities-count")).toHaveText(
-      "8",
-    );
-    await expect(page.getByTestId("summary-cases-count")).toHaveText("3");
     await expect(page.getByTestId("summary-pending-decisions")).toContainText(
       "2 propostas aguardando decisão",
     );
     await expect(page.getByTestId("summary-cases-with-pending")).toContainText(
       "3 dossiês com pendência",
     );
+
+    // Contagens consolidadas diretamente nas abas (sem duplicação na barra superior)
+    await expect(page.getByTestId("tab-opportunities-count")).toHaveText("7");
+    await expect(page.getByTestId("closed-items-count")).toHaveText("1");
+    await expect(page.getByTestId("tab-cases-count")).toHaveText("3");
+    await expect(page.getByTestId("tab-properties-count")).toHaveText("6");
 
     await expect(page.getByTestId("filters-section")).toBeVisible();
     await expect(
@@ -124,10 +125,9 @@ test.describe("Fundação U1 — Módulo Gestão de Vendas", () => {
 
     await page.goto("/");
 
-    await expect(page.getByTestId("summary-properties-count")).toHaveText("6");
-    await expect(page.getByTestId("summary-opportunities-count")).toHaveText(
-      "8",
-    );
+    await expect(page.getByTestId("tab-properties-count")).toHaveText("6");
+    await expect(page.getByTestId("tab-opportunities-count")).toHaveText("7");
+    await expect(page.getByTestId("closed-items-count")).toHaveText("1");
     await expect(
       page.getByText("Edifício Solar dos Ipês — Apto 101").first(),
     ).toBeVisible();

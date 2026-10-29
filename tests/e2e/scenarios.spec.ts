@@ -69,9 +69,8 @@ test.describe("U2 & U3 — Roteiros C1–C6 e Critérios AC1–AC7", () => {
     await expect(page.getByTestId("offer-comparison-view")).toContainText(
       "1.130.000",
     );
-    await page
-      .getByRole("button", { name: "Fechar modal de propostas" })
-      .click();
+    await page.keyboard.press("Escape");
+    await expect(page.getByTestId("offer-composer-modal")).toHaveCount(0);
 
     // Passo 6: Comprador aceita v2 → imóvel Reservado → dossiê criado
     await page.getByTestId("accept-version-btn-v2").click();
@@ -130,7 +129,8 @@ test.describe("U2 & U3 — Roteiros C1–C6 e Critérios AC1–AC7", () => {
       "Avanço impedido por bloqueio transversal ativo",
     );
 
-    // Resolve o bloqueio de financiamento e avança para Contratação
+    // Resolve o bloqueio de financiamento (formulário sob demanda) e avança para Contratação
+    await page.locator('[data-testid^="open-resolve-block-"]').first().click();
     const finResolveInput = page.locator('[data-testid^="resolve-block-input-"]').first();
     await finResolveInput.fill("Conformidade jurídica e engenharia liberadas pelo banco.");
     await page.locator('[data-testid^="resolve-block-btn-"]').first().click();
@@ -180,6 +180,7 @@ test.describe("U2 & U3 — Roteiros C1–C6 e Critérios AC1–AC7", () => {
       "Conclusão do marco impedida por bloqueio transversal ativo",
     );
 
+    await page.locator('[data-testid^="open-resolve-block-"]').first().click();
     const cartResolveInput = page
       .locator('[data-testid^="resolve-block-input-"]')
       .first();

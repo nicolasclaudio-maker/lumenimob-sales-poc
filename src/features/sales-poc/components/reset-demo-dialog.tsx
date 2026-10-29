@@ -26,11 +26,11 @@ export function ResetDemoDialog({ onConfirmReset }: ResetDemoDialogProps) {
         <Button
           type="button"
           variant="ghost"
-          size="sm"
-          className="text-muted-foreground hover:text-foreground"
+          size="xs"
+          className="text-muted-foreground/80 hover:text-foreground"
           data-testid="reset-demo-button"
         >
-          <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
+          <RotateCcw className="h-3 w-3" aria-hidden="true" />
           Restaurar ambiente
         </Button>
       </AlertDialogTrigger>

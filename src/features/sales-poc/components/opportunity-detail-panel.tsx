@@ -5,17 +5,14 @@ import {
   AlertCircle,
   ArrowLeft,
   ArrowLeftRight,
-  Building2,
   CheckCircle2,
+  ChevronRight,
   Clock,
-  FileCheck2,
   FolderOpen,
   Lock,
   Plus,
   Send,
   ShieldCheck,
-  User,
-  Users,
   XCircle,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -23,10 +20,15 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { IconButton } from "@/components/ui/icon-button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { ActionDialog } from "@/features/sales-poc/components/action-dialog";
 import { OfferComposerModal } from "@/features/sales-poc/components/offer-composer-modal";
 import {
@@ -66,6 +68,25 @@ export interface OpportunityDetailPanelProps {
   onOpenCase: (caseId: string) => void;
 }
 
+function ImmutableLockHint({ versionNumber }: { versionNumber: number }) {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span
+          data-testid={`immutable-badge-v${versionNumber}`}
+          className="inline-flex cursor-default items-center text-muted-foreground/80"
+        >
+          <Lock className="h-3 w-3" aria-hidden="true" />
+          <span className="sr-only">Imutável após envio</span>
+        </span>
+      </TooltipTrigger>
+      <TooltipContent>
+        Imutável após envio — ajustes geram nova versão
+      </TooltipContent>
+    </Tooltip>
+  );
+}
+
 export function OpportunityDetailPanel({
   opportunityId,
   onBackToBoard,
@@ -88,6 +109,8 @@ export function OpportunityDetailPanel({
   const [lossDialogOpen, setLossDialogOpen] = React.useState(false);
   const [lossReason, setLossReason] = React.useState("");
   const [lossError, setLossError] = React.useState<string | null>(null);
+
+  const [showFullTimeline, setShowFullTimeline] = React.useState(false);
 
   const [domainFeedback, setDomainFeedback] = React.useState<{
     kind: "error" | "success";
@@ -141,6 +164,11 @@ export function OpportunityDetailPanel({
   const historicalVersions = [...versions]
     .filter((v) => v.id !== activePendingVersion?.id)
     .reverse();
+
+  const reversedTimeline = [...opportunity.timeline].reverse();
+  const visibleTimeline = showFullTimeline
+    ? reversedTimeline
+    : reversedTimeline.slice(0, 3);
 
   function handleOpenComposer(
     tab: "compose" | "compare",
@@ -227,7 +255,8 @@ export function OpportunityDetailPanel({
 
     setDomainFeedback({
       kind: "success",
-      message: "Prazo de validade encerrado. Registre nova versão para retomar.",
+      message:
+        "Prazo de validade encerrado. Registre nova versão para retomar.",
     });
   }
 
@@ -263,23 +292,26 @@ export function OpportunityDetailPanel({
 
   return (
     <div data-testid="opportunity-detail-panel" className="space-y-5">
-      {/* Cabeçalho enxuto */}
+      {/* Breadcrumb + cabeçalho contextual único (sem cabeçalho global duplicado) */}
       <div className="flex flex-wrap items-start justify-between gap-4 border-b border-border pb-4">
         <div className="space-y-1">
-          <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+          <nav
+            aria-label="Navegação"
+            className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground"
+          >
             <Button
               type="button"
               variant="ghost"
               size="xs"
               onClick={onBackToBoard}
               data-testid="back-to-board-btn"
-              className="-ml-2"
+              className="-ml-2 text-muted-foreground hover:text-foreground"
             >
-              <ArrowLeft className="h-3.5 w-3.5" />
-              Voltar ao Kanban
+              <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
+              Gestão de vendas
             </Button>
-            <span aria-hidden="true">·</span>
-            <span className="font-mono">{opportunity.code}</span>
+            <ChevronRight className="h-3.5 w-3.5 opacity-60" aria-hidden="true" />
+            <span>{opportunity.code}</span>
             <Badge
               variant={
                 opportunity.status === "ACEITA"
@@ -293,37 +325,41 @@ export function OpportunityDetailPanel({
             >
               {OPPORTUNITY_STATUS_LABELS[opportunity.status]}
             </Badge>
-          </div>
-          <h2 className="text-xl font-bold">
+          </nav>
+
+          <h1 className="text-xl font-bold tracking-tight">
             {buyer.name} · {property.title}
-          </h2>
-          <p className="text-xs text-muted-foreground">
-            {opportunity.attendanceSummary}
-          </p>
+          </h1>
+          {opportunity.attendanceSummary && (
+            <p className="text-xs text-muted-foreground">
+              {opportunity.attendanceSummary}
+            </p>
+          )}
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           {linkedCase && (
             <Button
               type="button"
-              variant="teal"
+              size="sm"
               onClick={() => onOpenCase(linkedCase.id)}
               data-testid="open-linked-case-btn"
             >
               <FolderOpen className="h-4 w-4" />
-              Abrir dossiê {linkedCase.code}
+              Abrir dossiê ({SALE_CASE_STATUS_LABELS[linkedCase.status]})
             </Button>
           )}
 
           {canNegotiate && (
             <Button
               type="button"
-              variant="outline"
-              size="sm"
+              variant="ghost"
+              size="xs"
               onClick={handleOpenLossDialog}
               data-testid="toggle-loss-form-btn"
+              className="text-muted-foreground hover:text-[var(--error-fg)]"
             >
-              <XCircle className="h-4 w-4" />
+              <XCircle className="h-3.5 w-3.5" />
               Marcar perdida
             </Button>
           )}
@@ -360,101 +396,29 @@ export function OpportunityDetailPanel({
         </div>
       )}
 
-      {/* Layout 2 colunas: ação principal à esquerda + contexto lateral à direita */}
-      <div className="grid gap-5 lg:grid-cols-[1fr_340px] lg:items-start">
-        <div className="space-y-5">
-          {/* Bloco de próxima ação quando não há proposta aguardando decisão */}
-          {canNegotiate && !activePendingVersion && (
-            <Card className="border-primary/40">
-              <CardContent className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
-                <div className="space-y-0.5">
-                  <p className="text-sm font-semibold">
-                    {versions.length === 0
-                      ? "Próximo passo: registrar a primeira proposta"
-                      : "Nenhuma proposta aguardando resposta"}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {versions.length === 0
-                      ? `Valor pedido pelo imóvel: ${formatCurrencyBRL(property.askingPrice)}.`
-                      : "Envie uma nova versão mantendo todo o histórico anterior."}
-                  </p>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-2">
-                  <Button
-                    type="button"
-                    size="sm"
-                    onClick={() => handleOpenComposer("compose", "COMPRADOR")}
-                    data-testid="open-offer-composer-btn"
-                  >
-                    <Plus className="h-4 w-4" />
-                    {versions.length === 0
-                      ? "Enviar proposta v1"
-                      : `Nova proposta v${versions.length + 1}`}
-                  </Button>
-                  {versions.length > 0 && (
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleOpenComposer("compose", "VENDEDOR")}
-                      data-testid="open-counteroffer-composer-btn"
-                    >
-                      <Send className="h-3.5 w-3.5" />
-                      Contraproposta v{versions.length + 1}
-                    </Button>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Resumo pós-aceite */}
-          {opportunity.status === "ACEITA" && linkedCase && (
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[var(--color-success-200)] bg-[var(--success-subtle)] px-4 py-3 text-sm text-[var(--success-fg)]">
-              <div>
-                <p className="font-semibold">
-                  Negociação concluída com proposta aceita
-                </p>
-                <p className="text-xs opacity-90">
-                  Acompanhe documentos, marcos e cartório no dossiê{" "}
-                  {linkedCase.code} (etapa:{" "}
-                  {SALE_CASE_STATUS_LABELS[linkedCase.status]}).
-                </p>
-              </div>
-              <Button
-                type="button"
-                size="sm"
-                variant="teal"
-                onClick={() => onOpenCase(linkedCase.id)}
-              >
-                Ir para o dossiê
-              </Button>
-            </div>
-          )}
-
-          {/* Propostas e contrapropostas */}
+      {/* Layout 2 colunas: negociação à esquerda + resumo unificado à direita */}
+      <div className="grid gap-6 lg:grid-cols-[1fr_330px] lg:items-start">
+        <div className="space-y-6">
+          {/* Card único de Propostas e contrapropostas */}
           <Card data-testid="offer-versions-section">
             <CardHeader className="pb-3">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <div>
-                  <CardTitle className="text-base">
-                    Propostas e contrapropostas ({versions.length})
-                  </CardTitle>
-                  <CardDescription>
-                    Versões enviadas ficam bloqueadas para edição; ajustes geram
-                    nova versão.
-                  </CardDescription>
-                </div>
+                <CardTitle className="text-base">
+                  Propostas{" "}
+                  <span className="font-normal text-muted-foreground">
+                    ({versions.length})
+                  </span>
+                </CardTitle>
+
                 {versions.length >= 2 && (
                   <Button
                     type="button"
-                    variant="outline"
-                    size="sm"
+                    variant="ghost"
+                    size="xs"
                     onClick={() => handleOpenComposer("compare")}
                     data-testid="open-offer-compare-btn"
                   >
-                    <ArrowLeftRight className="h-4 w-4" />
+                    <ArrowLeftRight className="h-3.5 w-3.5" />
                     Comparar versões
                   </Button>
                 )}
@@ -463,22 +427,79 @@ export function OpportunityDetailPanel({
 
             <CardContent className="space-y-4">
               {versions.length === 0 ? (
-                <p className="rounded-lg border border-dashed border-border py-6 text-center text-xs text-muted-foreground">
-                  Nenhuma proposta enviada ainda nesta oportunidade.
-                </p>
+                <div className="flex flex-col items-center justify-between gap-3 rounded-lg bg-secondary/35 px-4 py-6 text-center sm:flex-row sm:text-left">
+                  <div>
+                    <p className="text-sm font-medium text-foreground">
+                      Nenhuma proposta enviada
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Valor pedido pelo imóvel:{" "}
+                      {formatCurrencyBRL(property.askingPrice)}
+                    </p>
+                  </div>
+                  {canNegotiate && (
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={() => handleOpenComposer("compose", "COMPRADOR")}
+                      data-testid="open-offer-composer-btn"
+                    >
+                      <Plus className="h-4 w-4" />
+                      Enviar proposta v1
+                    </Button>
+                  )}
+                </div>
               ) : (
                 <>
-                  {/* Versão ativa aguardando decisão em destaque no topo */}
+                  {/* Faixa enxuta quando há histórico mas nenhuma versão aberta */}
+                  {canNegotiate && !activePendingVersion && (
+                    <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-secondary/45 px-3.5 py-2.5">
+                      <span className="text-xs text-muted-foreground">
+                        Nenhuma proposta aguardando resposta.
+                      </span>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={() =>
+                            handleOpenComposer("compose", "COMPRADOR")
+                          }
+                          data-testid="open-offer-composer-btn"
+                        >
+                          <Plus className="h-4 w-4" />
+                          Nova proposta v{versions.length + 1}
+                        </Button>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          onClick={() =>
+                            handleOpenComposer("compose", "VENDEDOR")
+                          }
+                          data-testid="open-counteroffer-composer-btn"
+                        >
+                          <Send className="h-3.5 w-3.5" />
+                          Contraproposta v{versions.length + 1}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Versão ativa aguardando decisão em destaque */}
                   {activePendingVersion && (
                     <div
                       data-testid={`offer-version-card-v${activePendingVersion.versionNumber}`}
-                      className="rounded-xl border-2 border-primary/40 bg-[var(--accent-subtle)]/20 p-4"
+                      className="rounded-xl border border-primary/35 bg-[var(--accent-subtle)]/25 p-4"
                     >
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="text-sm font-bold">
-                            Versão v{activePendingVersion.versionNumber} ·{" "}
-                            {OFFER_AUTHOR_LABELS[activePendingVersion.authorRole]}
+                          <span className="text-sm font-semibold">
+                            v{activePendingVersion.versionNumber} ·{" "}
+                            {
+                              OFFER_AUTHOR_LABELS[
+                                activePendingVersion.authorRole
+                              ]
+                            }
                           </span>
                           <Badge
                             variant={getOfferStatusBadgeVariant(
@@ -494,26 +515,22 @@ export function OpportunityDetailPanel({
                           </Badge>
                         </div>
 
-                        <span className="inline-flex items-center gap-2 text-xs text-muted-foreground">
+                        <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
                           <span>
                             {formatDateTime(activePendingVersion.createdAt)}
                           </span>
-                          <span
-                            data-testid={`immutable-badge-v${activePendingVersion.versionNumber}`}
-                            className="inline-flex items-center gap-1"
-                          >
-                            <Lock className="h-3 w-3" />
-                            Imutável após envio
-                          </span>
+                          <ImmutableLockHint
+                            versionNumber={activePendingVersion.versionNumber}
+                          />
                         </span>
                       </div>
 
-                      <div className="mt-3 grid gap-3 sm:grid-cols-4 text-xs">
+                      <div className="mt-3 grid gap-3 text-xs sm:grid-cols-4">
                         <div>
                           <span className="text-muted-foreground">
                             Valor proposto
                           </span>
-                          <p className="mt-0.5 text-base font-bold text-foreground">
+                          <p className="mt-0.5 text-base font-bold tabular-nums text-foreground">
                             {formatCurrencyBRL(activePendingVersion.amount)}
                           </p>
                         </div>
@@ -530,21 +547,19 @@ export function OpportunityDetailPanel({
                           </p>
                           {activePendingVersion.paymentModality ===
                             "FINANCIADO" && (
-                            <p className="text-muted-foreground">
+                            <p className="tabular-nums text-muted-foreground">
                               Entrada{" "}
                               {formatCurrencyBRL(
                                 activePendingVersion.downPaymentAmount,
-                              )}{" "}
-                              + Financ.{" "}
-                              {formatCurrencyBRL(
-                                activePendingVersion.financingAmount,
                               )}
                             </p>
                           )}
                         </div>
                         <div>
-                          <span className="text-muted-foreground">Validade</span>
-                          <p className="mt-0.5 font-semibold text-foreground">
+                          <span className="text-muted-foreground">
+                            Validade
+                          </span>
+                          <p className="mt-0.5 font-semibold tabular-nums text-foreground">
                             {formatShortDate(activePendingVersion.validUntil)}
                           </p>
                         </div>
@@ -552,7 +567,7 @@ export function OpportunityDetailPanel({
                           <span className="text-muted-foreground">
                             Comissão prevista
                           </span>
-                          <p className="mt-0.5 font-semibold text-foreground">
+                          <p className="mt-0.5 font-semibold tabular-nums text-foreground">
                             {formatCurrencyBRL(
                               activePendingVersion.expectedCommissionAmount,
                             )}
@@ -560,13 +575,14 @@ export function OpportunityDetailPanel({
                         </div>
                       </div>
 
-                      <p className="mt-3 text-xs text-muted-foreground">
-                        <strong className="text-foreground">Condições:</strong>{" "}
-                        {activePendingVersion.conditions}
-                      </p>
+                      {activePendingVersion.conditions && (
+                        <p className="mt-3 text-xs text-muted-foreground">
+                          {activePendingVersion.conditions}
+                        </p>
+                      )}
 
-                      {/* Barra de decisão clara */}
-                      <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-3">
+                      {/* Hierarquia clara: 1 primária + 1 secundária + ações terciárias discretas */}
+                      <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-border/70 pt-3">
                         <div className="flex flex-wrap items-center gap-2">
                           <Button
                             type="button"
@@ -595,114 +611,102 @@ export function OpportunityDetailPanel({
                             data-testid="open-counteroffer-composer-btn"
                           >
                             <Send className="h-3.5 w-3.5" />
-                            Contrapropor (v{versions.length + 1})
+                            Contrapropor
                           </Button>
 
                           <Button
                             type="button"
                             size="sm"
-                            variant="outline"
+                            variant="ghost"
                             onClick={() =>
                               handleOpenRejectDialog(activePendingVersion)
                             }
                             data-testid={`reject-version-toggle-v${activePendingVersion.versionNumber}`}
+                            className="text-muted-foreground hover:text-[var(--error-fg)]"
                           >
-                            <XCircle className="h-3.5 w-3.5" />
                             Rejeitar
                           </Button>
                         </div>
 
-                        <div className="flex flex-wrap items-center gap-1">
-                          <Button
-                            type="button"
-                            size="xs"
-                            variant="ghost"
+                        <div className="flex items-center gap-1">
+                          <IconButton
+                            tooltip="Nova versão do comprador"
                             onClick={() =>
                               handleOpenComposer("compose", "COMPRADOR")
                             }
                             data-testid="open-offer-composer-btn"
-                            className="text-muted-foreground"
                           >
-                            Nova versão do comprador
-                          </Button>
-                          <Button
-                            type="button"
-                            size="xs"
-                            variant="ghost"
+                            <Plus className="h-3.5 w-3.5" />
+                          </IconButton>
+                          <IconButton
+                            tooltip="Marcar proposta como expirada"
                             onClick={() =>
                               handleExpireVersion(activePendingVersion.id)
                             }
                             data-testid={`expire-version-btn-v${activePendingVersion.versionNumber}`}
-                            className="text-muted-foreground"
                           >
-                            <Clock className="h-3 w-3" />
-                            Marcar expirada
-                          </Button>
+                            <Clock className="h-3.5 w-3.5" />
+                          </IconButton>
                         </div>
                       </div>
                     </div>
                   )}
 
-                  {/* Versões encerradas / histórico compacto */}
+                  {/* Versões anteriores em lista enxuta */}
                   {historicalVersions.length > 0 && (
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                       {activePendingVersion && (
                         <p className="text-xs font-medium text-muted-foreground">
                           Versões anteriores
                         </p>
                       )}
-                      {historicalVersions.map((version) => (
-                        <div
-                          key={version.id}
-                          data-testid={`offer-version-card-v${version.versionNumber}`}
-                          className="rounded-lg border border-border bg-secondary/20 px-3.5 py-2.5 text-xs"
-                        >
-                          <div className="flex flex-wrap items-center justify-between gap-2">
-                            <div className="flex flex-wrap items-center gap-2">
-                              <span className="font-semibold text-foreground">
-                                v{version.versionNumber} ·{" "}
-                                {formatCurrencyBRL(version.amount)}
+                      <div className="divide-y divide-border/70 rounded-lg border border-border/80 bg-secondary/20">
+                        {historicalVersions.map((version) => (
+                          <div
+                            key={version.id}
+                            data-testid={`offer-version-card-v${version.versionNumber}`}
+                            className="px-3.5 py-2.5 text-xs"
+                          >
+                            <div className="flex flex-wrap items-center justify-between gap-2">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <span className="font-semibold tabular-nums text-foreground">
+                                  v{version.versionNumber} ·{" "}
+                                  {formatCurrencyBRL(version.amount)}
+                                </span>
+                                <span className="text-muted-foreground">
+                                  {OFFER_AUTHOR_LABELS[version.authorRole]} ·{" "}
+                                  {
+                                    PAYMENT_MODALITY_LABELS[
+                                      version.paymentModality
+                                    ]
+                                  }
+                                </span>
+                                <Badge
+                                  variant={getOfferStatusBadgeVariant(
+                                    version.status,
+                                  )}
+                                  data-testid={`offer-version-status-v${version.versionNumber}`}
+                                >
+                                  {OFFER_VERSION_STATUS_LABELS[version.status]}
+                                </Badge>
+                              </div>
+
+                              <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+                                <span>{formatDateTime(version.createdAt)}</span>
+                                <ImmutableLockHint
+                                  versionNumber={version.versionNumber}
+                                />
                               </span>
-                              <span className="text-muted-foreground">
-                                {OFFER_AUTHOR_LABELS[version.authorRole]} ·{" "}
-                                {
-                                  PAYMENT_MODALITY_LABELS[
-                                    version.paymentModality
-                                  ]
-                                }
-                              </span>
-                              <Badge
-                                variant={getOfferStatusBadgeVariant(
-                                  version.status,
-                                )}
-                                data-testid={`offer-version-status-v${version.versionNumber}`}
-                              >
-                                {OFFER_VERSION_STATUS_LABELS[version.status]}
-                              </Badge>
                             </div>
 
-                            <span className="inline-flex items-center gap-2 text-[11px] text-muted-foreground">
-                              <span>{formatDateTime(version.createdAt)}</span>
-                              <span
-                                data-testid={`immutable-badge-v${version.versionNumber}`}
-                                className="inline-flex items-center gap-1"
-                              >
-                                <Lock className="h-3 w-3" />
-                                Imutável após envio
-                              </span>
-                            </span>
+                            {version.decisionNote && (
+                              <p className="mt-1 text-muted-foreground">
+                                Motivo: {version.decisionNote}
+                              </p>
+                            )}
                           </div>
-
-                          <p className="mt-1 text-muted-foreground">
-                            {version.conditions}
-                          </p>
-                          {version.decisionNote && (
-                            <p className="mt-1 font-medium text-foreground">
-                              Motivo: {version.decisionNote}
-                            </p>
-                          )}
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   )}
                 </>
@@ -710,174 +714,160 @@ export function OpportunityDetailPanel({
             </CardContent>
           </Card>
 
-          {/* Histórico da oportunidade */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">
-                Histórico da negociação ({opportunity.timeline.length})
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ol className="space-y-2.5 border-l-2 border-border pl-4 text-xs">
-                {[...opportunity.timeline].reverse().map((event) => (
-                  <li key={event.id} className="space-y-0.5">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-semibold text-foreground">
-                        {event.actor}
-                      </span>
-                      <span className="text-muted-foreground">
-                        · {TIMELINE_EVENT_TYPE_LABELS[event.type]} ·{" "}
-                        {formatDateTime(event.timestamp)}
-                      </span>
-                    </div>
-                    <p className="text-muted-foreground">{event.description}</p>
-                  </li>
-                ))}
-              </ol>
-            </CardContent>
-          </Card>
+          {/* Histórico discreto sem caixa pesada */}
+          <section aria-label="Histórico da negociação" className="space-y-2.5">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Histórico ({opportunity.timeline.length})
+              </h2>
+              {reversedTimeline.length > 3 && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="xs"
+                  onClick={() => setShowFullTimeline((prev) => !prev)}
+                  className="text-muted-foreground"
+                >
+                  {showFullTimeline
+                    ? "Mostrar menos"
+                    : `Ver todos (${reversedTimeline.length})`}
+                </Button>
+              )}
+            </div>
+            <ol className="space-y-2 border-l border-border pl-3.5 text-xs">
+              {visibleTimeline.map((event) => (
+                <li key={event.id} className="space-y-0.5">
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <span className="font-medium text-foreground">
+                      {event.actor}
+                    </span>
+                    <span className="text-muted-foreground">
+                      · {TIMELINE_EVENT_TYPE_LABELS[event.type]} ·{" "}
+                      {formatDateTime(event.timestamp)}
+                    </span>
+                  </div>
+                  <p className="text-muted-foreground">{event.description}</p>
+                </li>
+              ))}
+            </ol>
+          </section>
         </div>
 
-        {/* Coluna lateral de consulta: Imóvel, Autorização e Partes */}
-        <aside className="space-y-4">
+        {/* Coluna lateral unificada em um único card de resumo */}
+        <aside>
           <Card>
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between gap-2">
-                <CardTitle className="flex items-center gap-2 text-sm">
-                  <Building2 className="h-4 w-4 text-primary" />
-                  Imóvel
-                </CardTitle>
-                <Badge
-                  variant={getPropertyBadgeVariant(property.commercialStatus)}
-                  dot
-                  data-testid="opportunity-property-status-badge"
-                >
-                  {PROPERTY_COMMERCIAL_STATUS_LABELS[property.commercialStatus]}
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-2 text-xs">
-              <p className="text-sm font-semibold text-foreground">
-                {property.title}
-              </p>
-              <p className="text-muted-foreground">
-                {property.code} · {PROPERTY_TYPE_LABELS[property.type]} ·{" "}
-                {property.address}, {property.neighborhood}
-              </p>
-              <p className="text-muted-foreground">
-                Matrícula:{" "}
-                <span className="font-mono">{property.registrationCode}</span>
-              </p>
-              <div className="flex items-center justify-between border-t border-border pt-2">
-                <span className="text-muted-foreground">Valor pedido</span>
-                <span className="text-sm font-bold">
-                  {formatCurrencyBRL(property.askingPrice)}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Anúncio</span>
-                <span
-                  className="font-medium"
-                  data-testid="opportunity-property-listing-text"
-                >
-                  {PROPERTY_LISTING_STATUS_LABELS[property.listingStatus]}
-                </span>
-              </div>
-            </CardContent>
-          </Card>
+            <CardContent className="divide-y divide-border/80 p-4 text-xs">
+              {/* Imóvel */}
+              <div className="space-y-1.5 pb-3.5">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-semibold text-muted-foreground">
+                    Imóvel
+                  </span>
+                  <Badge
+                    variant={getPropertyBadgeVariant(property.commercialStatus)}
+                    dot
+                    data-testid="opportunity-property-status-badge"
+                  >
+                    {PROPERTY_COMMERCIAL_STATUS_LABELS[property.commercialStatus]}
+                  </Badge>
+                </div>
 
-          <Card data-testid="sale-authorization-card">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between gap-2">
-                <CardTitle className="flex items-center gap-2 text-sm">
-                  <FileCheck2 className="h-4 w-4 text-primary" />
-                  Autorização de venda
-                </CardTitle>
-                <Badge
-                  variant={
-                    property.saleAuthorization.status === "VIGENTE"
-                      ? "success"
-                      : "error"
-                  }
-                  data-testid="sale-authorization-status-badge"
-                >
-                  {property.saleAuthorization.status}
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-1.5 text-xs">
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Código</span>
-                <span className="font-mono font-medium">
-                  {property.saleAuthorization.code}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Vigência</span>
-                <span>
-                  até {formatShortDate(property.saleAuthorization.validUntil)}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Regime</span>
-                <span>
-                  {property.saleAuthorization.exclusivity
-                    ? "Com exclusividade"
-                    : "Sem exclusividade"}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Comissão ref.</span>
-                <span>
-                  {property.saleAuthorization.expectedCommissionPercent}%
-                </span>
-              </div>
-              <div className="flex items-center justify-between border-t border-border pt-1.5">
-                <span className="text-muted-foreground">Financiamento</span>
-                <span>
-                  {property.acceptsFinancing ? "Aceita" : "Somente à vista"}
-                </span>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-sm">
-                <Users className="h-4 w-4 text-primary" />
-                Partes · Corretor {broker.name}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2.5 text-xs">
-              <div className="rounded-lg bg-secondary/40 p-2.5">
-                <p className="flex items-center gap-1 font-semibold text-foreground">
-                  <User className="h-3.5 w-3.5 text-primary" />
-                  Comprador: {buyer.name}
+                <p className="text-sm font-semibold text-foreground">
+                  {property.title}
                 </p>
                 <p className="text-muted-foreground">
-                  CPF {buyer.maskedDocument} · {buyer.email}
+                  {PROPERTY_TYPE_LABELS[property.type]} · {property.address},{" "}
+                  {property.neighborhood}
+                </p>
+                <div className="flex flex-wrap items-baseline justify-between gap-2 pt-1">
+                  <span className="text-sm font-bold tabular-nums text-foreground">
+                    {formatCurrencyBRL(property.askingPrice)}
+                  </span>
+                  <span
+                    className="text-muted-foreground"
+                    data-testid="opportunity-property-listing-text"
+                  >
+                    {PROPERTY_LISTING_STATUS_LABELS[property.listingStatus]}
+                  </span>
+                </div>
+                <p className="text-muted-foreground">
+                  {property.registrationCode}
                 </p>
               </div>
 
-              <div className="space-y-1">
-                <p className="font-semibold text-foreground">
-                  {sellers.length === 1
-                    ? "Vendedor"
-                    : `Vendedores (${sellers.length})`}
-                </p>
-                {sellers.map((seller) => (
-                  <div
-                    key={seller.id}
-                    className="rounded-lg border border-border px-2.5 py-1.5"
+              {/* Autorização de venda enxuta */}
+              <div
+                data-testid="sale-authorization-card"
+                className="space-y-1 py-3.5"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-semibold text-muted-foreground">
+                    Autorização de venda
+                  </span>
+                  <Badge
+                    variant={
+                      property.saleAuthorization.status === "VIGENTE"
+                        ? "success"
+                        : "error"
+                    }
+                    data-testid="sale-authorization-status-badge"
                   >
-                    <p className="font-medium text-foreground">
-                      {seller.name} · CPF {seller.maskedDocument}
-                    </p>
-                    <p className="text-muted-foreground">
-                      {seller.civilStatusNote}
-                    </p>
-                  </div>
-                ))}
+                    {property.saleAuthorization.status}
+                  </Badge>
+                </div>
+                <p className="text-muted-foreground">
+                  Até {formatShortDate(property.saleAuthorization.validUntil)} ·{" "}
+                  {property.saleAuthorization.exclusivity
+                    ? "Com exclusividade"
+                    : "Sem exclusividade"}{" "}
+                  · Comissão{" "}
+                  {property.saleAuthorization.expectedCommissionPercent}% ·{" "}
+                  {property.acceptsFinancing
+                    ? "Aceita financiamento"
+                    : "Somente à vista"}
+                </p>
+              </div>
+
+              {/* Partes sem caixas aninhadas */}
+              <div className="space-y-2.5 pt-3.5">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-semibold text-muted-foreground">
+                    Partes
+                  </span>
+                  <span className="text-muted-foreground">
+                    Corretor {broker.name}
+                  </span>
+                </div>
+
+                <div>
+                  <p className="font-medium text-foreground">
+                    Comprador · {buyer.name}
+                  </p>
+                  <p className="text-muted-foreground">
+                    CPF {buyer.maskedDocument}
+                  </p>
+                </div>
+
+                <div className="space-y-1.5">
+                  <p className="text-muted-foreground">
+                    {sellers.length === 1
+                      ? "Vendedor"
+                      : `Vendedores (${sellers.length})`}
+                  </p>
+                  {sellers.map((seller) => (
+                    <div key={seller.id}>
+                      <p className="font-medium text-foreground">
+                        {seller.name}{" "}
+                        <span className="font-normal text-muted-foreground">
+                          · CPF {seller.maskedDocument}
+                        </span>
+                      </p>
+                      <p className="text-muted-foreground">
+                        {seller.civilStatusNote}
+                      </p>
+                    </div>
+                  ))}
+                </div>
               </div>
             </CardContent>
           </Card>

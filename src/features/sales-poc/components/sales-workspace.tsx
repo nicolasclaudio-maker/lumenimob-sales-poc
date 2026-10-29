@@ -15,6 +15,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PageContainer } from "@/components/ui/page-container";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { AttendanceModal } from "@/features/sales-poc/components/attendance-modal";
 import { OpportunityDetailPanel } from "@/features/sales-poc/components/opportunity-detail-panel";
@@ -57,20 +62,25 @@ const CASE_COLUMNS: Exclude<SaleCaseStatus, "CANCELADO">[] = [
   "CONCLUIDO",
 ];
 
-const COLUMN_HINTS: Partial<Record<SaleOpportunityStatus | SaleCaseStatus, string>> = {
-  ATENDIMENTO: "Interesse registrado, sem proposta",
-  EM_PROPOSTA: "Negociação em andamento",
-  ACEITA: "Proposta aceita · segue no dossiê",
-  PERDIDA: "Negociações encerradas",
-  DILIGENCIA: "Análise documental",
-  CONTRATACAO: "Assinatura do compromisso",
-  CARTORIO: "Escritura, protocolo e registro",
-  ENTREGA: "Entrega de chaves",
-  CONCLUIDO: "Venda finalizada",
+const COLUMN_HINTS: Partial<
+  Record<SaleOpportunityStatus | SaleCaseStatus, string>
+> = {
+  ATENDIMENTO: "Interesse registrado, ainda sem proposta formalizada",
+  EM_PROPOSTA: "Cadeia de propostas e contrapropostas em aberto",
+  ACEITA: "Proposta aceita; fechamento segue no dossiê",
+  PERDIDA: "Negociações encerradas sem fechamento",
+  DILIGENCIA: "Conferência de certidões e documentos das partes e do imóvel",
+  CONTRATACAO: "Assinatura do instrumento particular de compromisso",
+  CARTORIO: "Escritura pública, protocolo e registro na matrícula",
+  ENTREGA: "Entrega de chaves e imissão na posse",
+  CONCLUIDO: "Jornada de compra e venda finalizada",
 };
 
 const SELECT_CLASS =
-  "h-8 rounded-md border border-input bg-card px-2 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  "h-8 rounded-md border border-input bg-card px-2.5 text-xs text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+
+const CARD_BUTTON_CLASS =
+  "block w-full cursor-pointer rounded-lg border border-border bg-card p-3 text-left shadow-2xs transition-colors hover:border-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 function BoardColumn({
   title,
@@ -93,23 +103,32 @@ function BoardColumn({
     <div
       data-testid={testId}
       className={cn(
-        "flex min-w-0 flex-col rounded-xl bg-secondary/40 p-2.5",
-        muted && "opacity-80",
+        "flex min-w-0 flex-col rounded-xl bg-secondary/45 p-2.5",
+        muted && "opacity-75",
       )}
     >
-      <div className="mb-2.5 flex items-baseline justify-between gap-2 px-1">
-        <div className="min-w-0">
-          <p className="text-sm font-semibold">{title}</p>
-          {hint && (
-            <p className="truncate text-[11px] text-muted-foreground">{hint}</p>
-          )}
-        </div>
-        <span className="text-xs font-semibold text-muted-foreground">
+      <div className="mb-2.5 flex items-center justify-between gap-2 px-1">
+        {hint ? (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="cursor-default truncate text-xs font-semibold tracking-tight text-foreground">
+                {title}
+              </span>
+            </TooltipTrigger>
+            <TooltipContent>{hint}</TooltipContent>
+          </Tooltip>
+        ) : (
+          <span className="truncate text-xs font-semibold tracking-tight text-foreground">
+            {title}
+          </span>
+        )}
+        <span className="rounded-full bg-background/80 px-2 py-0.5 text-xs font-medium tabular-nums text-muted-foreground">
           {count}
         </span>
       </div>
+
       {count === 0 ? (
-        <p className="rounded-lg border border-dashed border-border py-6 text-center text-xs text-muted-foreground">
+        <p className="py-7 text-center text-xs text-muted-foreground/80">
           {emptyText}
         </p>
       ) : (
@@ -118,9 +137,6 @@ function BoardColumn({
     </div>
   );
 }
-
-const CARD_BUTTON_CLASS =
-  "block w-full cursor-pointer rounded-lg border border-border bg-card p-3 text-left shadow-2xs transition-colors hover:border-primary/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 export function SalesWorkspace() {
   const { fixture, resetDemo } = useSalesPocStore();
@@ -250,41 +266,10 @@ export function SalesWorkspace() {
     ? [...OPPORTUNITY_COLUMNS, "PERDIDA"]
     : OPPORTUNITY_COLUMNS;
 
+  const isInDetail = Boolean(selectedOpportunityId || selectedCaseId);
+
   return (
-    <PageContainer size="wide" className="space-y-5">
-      {/* Cabeçalho global do módulo */}
-      <header className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div className="space-y-1">
-          <p className="text-xs text-muted-foreground">
-            <span className="font-medium text-foreground">
-              {fixture.brokerage.name}
-            </span>{" "}
-            · {fixture.brokerage.creci}
-          </p>
-          <h1 className="text-2xl font-bold tracking-tight">
-            Gestão de vendas
-          </h1>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          {resetCount > 0 && (
-            <Badge variant="teal" data-testid="reset-feedback-badge">
-              Ambiente restaurado
-            </Badge>
-          )}
-          <ResetDemoDialog onConfirmReset={handleConfirmReset} />
-          <Button
-            type="button"
-            onClick={() => setAttendanceModalOpen(true)}
-            data-testid="open-attendance-modal-btn"
-          >
-            <Plus className="h-4 w-4" aria-hidden="true" />
-            Nova oportunidade
-          </Button>
-        </div>
-      </header>
-
-      {/* Sub-rotas client-side compatíveis com build estático: Detalhe da Oportunidade (Tela 2) ou Dossiê (Tela 4) */}
+    <PageContainer size="wide" className="space-y-5 py-6">
       {selectedOpportunityId ? (
         <OpportunityDetailPanel
           key={selectedOpportunityId}
@@ -299,63 +284,87 @@ export function SalesWorkspace() {
           onBackToBoard={handleBackToBoard}
           onOpenOpportunity={handleOpenOpportunity}
         />
-      ) : (
+      ) : null}
+
+      {!isInDetail && (
         <>
-          {/* Resumo da carteira + indicadores acionáveis */}
-          <section
-            aria-label="Resumo da carteira"
-            data-testid="fixture-summary"
-            className="flex flex-wrap items-center gap-x-5 gap-y-2 rounded-xl border border-border bg-card px-4 py-3 text-sm"
-          >
-            <span className="text-muted-foreground">
-              <strong
-                className="text-foreground"
-                data-testid="summary-properties-count"
-              >
-                {fixture.properties.length}
-              </strong>{" "}
-              imóveis à venda
-            </span>
-            <span className="text-muted-foreground">
-              <strong
-                className="text-foreground"
-                data-testid="summary-opportunities-count"
-              >
-                {fixture.opportunities.length}
-              </strong>{" "}
-              oportunidades
-            </span>
-            <span className="text-muted-foreground">
-              <strong
-                className="text-foreground"
-                data-testid="summary-cases-count"
-              >
-                {activeCases.length}
-              </strong>{" "}
-              dossiês ativos
-            </span>
+          {/* Cabeçalho enxuto do quadro comercial */}
+          <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="space-y-0.5">
+              <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
+                <h1 className="text-2xl font-bold tracking-tight">
+                  Gestão de vendas
+                </h1>
+                <span className="text-xs text-muted-foreground">
+                  {fixture.brokerage.name} · {fixture.brokerage.creci}
+                </span>
+              </div>
 
-            <span className="hidden h-4 w-px bg-border sm:block" aria-hidden />
+              {/* Atalhos acionáveis de atenção imediata (sem contagens redundantes) */}
+              <div
+                aria-label="Pendências imediatas"
+                data-testid="fixture-summary"
+                className="flex flex-wrap items-center gap-2 pt-1.5 text-xs"
+              >
+                {pendingDecisionCount > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setActiveBoardTab("opportunities")}
+                    data-testid="summary-pending-decisions"
+                    className="inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-border bg-card px-2.5 py-1 font-medium text-foreground transition-colors hover:border-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    <Clock
+                      className="h-3.5 w-3.5 text-muted-foreground"
+                      aria-hidden="true"
+                    />
+                    {pendingDecisionCount}{" "}
+                    {pendingDecisionCount === 1
+                      ? "proposta aguardando decisão"
+                      : "propostas aguardando decisão"}
+                  </button>
+                )}
 
-            <button
-              type="button"
-              onClick={() => setActiveBoardTab("opportunities")}
-              data-testid="summary-pending-decisions"
-              className="inline-flex items-center gap-1.5 rounded-md px-1.5 py-0.5 font-medium text-[var(--info-fg)] hover:bg-[var(--info-subtle)]"
-            >
-              <Clock className="h-3.5 w-3.5" aria-hidden />
-              {pendingDecisionCount} propostas aguardando decisão
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveBoardTab("cases")}
-              data-testid="summary-cases-with-pending"
-              className="inline-flex items-center gap-1.5 rounded-md px-1.5 py-0.5 font-medium text-[var(--amber-fg)] hover:bg-[var(--amber-subtle)]"
-            >
-              <AlertTriangle className="h-3.5 w-3.5" aria-hidden />
-              {casesWithPendingCount} dossiês com pendência
-            </button>
-          </section>
+                {casesWithPendingCount > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setActiveBoardTab("cases")}
+                    data-testid="summary-cases-with-pending"
+                    className="inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-[var(--color-amber-400)]/50 bg-[var(--amber-subtle)]/70 px-2.5 py-1 font-medium text-[var(--amber-fg)] transition-colors hover:border-[var(--color-amber-500)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    <AlertTriangle className="h-3.5 w-3.5" aria-hidden="true" />
+                    {casesWithPendingCount}{" "}
+                    {casesWithPendingCount === 1
+                      ? "dossiê com pendência"
+                      : "dossiês com pendência"}
+                  </button>
+                )}
+
+                {pendingDecisionCount === 0 && casesWithPendingCount === 0 && (
+                  <span className="text-muted-foreground">
+                    Nenhuma pendência imediata na carteira.
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
+              {resetCount > 0 && (
+                <Badge variant="secondary" data-testid="reset-feedback-badge">
+                  Ambiente restaurado
+                </Badge>
+              )}
+              <ResetDemoDialog onConfirmReset={handleConfirmReset} />
+              <Button
+                type="button"
+                size="sm"
+                onClick={() => setAttendanceModalOpen(true)}
+                data-testid="open-attendance-modal-btn"
+              >
+                <Plus className="h-4 w-4" aria-hidden="true" />
+                Nova oportunidade
+              </Button>
+            </div>
+          </header>
 
           {/* Tela 1: Kanban de vendas (Oportunidades / Dossiês / Visão por imóvel) */}
           <Tabs
@@ -366,25 +375,61 @@ export function SalesWorkspace() {
             <div className="flex flex-col gap-3 border-b border-border lg:flex-row lg:items-end lg:justify-between">
               <TabsList
                 aria-label="Visões do módulo de gestão de vendas"
-                className="w-auto border-b-0"
+                className="max-w-full w-auto border-b-0"
               >
                 <TabsTrigger
                   value="opportunities"
                   data-testid="board-tab-opportunities"
                 >
-                  <Kanban className="h-4 w-4" aria-hidden="true" />
-                  Oportunidades ({openOpportunitiesCount})
+                  <Kanban
+                    className="hidden h-4 w-4 sm:block"
+                    aria-hidden="true"
+                  />
+                  <span>
+                    Oportunidades (
+                    <span
+                      className="tabular-nums"
+                      data-testid="tab-opportunities-count"
+                    >
+                      {openOpportunitiesCount}
+                    </span>
+                    )
+                  </span>
                 </TabsTrigger>
                 <TabsTrigger value="cases" data-testid="board-tab-cases">
-                  <FolderKanban className="h-4 w-4" aria-hidden="true" />
-                  Dossiês ({filteredActiveCases.length})
+                  <FolderKanban
+                    className="hidden h-4 w-4 sm:block"
+                    aria-hidden="true"
+                  />
+                  <span>
+                    Dossiês (
+                    <span
+                      className="tabular-nums"
+                      data-testid="tab-cases-count"
+                    >
+                      {filteredActiveCases.length}
+                    </span>
+                    )
+                  </span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="properties"
                   data-testid="board-tab-properties"
                 >
-                  <Building2 className="h-4 w-4" aria-hidden="true" />
-                  Por imóvel ({filteredProperties.length})
+                  <Building2
+                    className="hidden h-4 w-4 sm:block"
+                    aria-hidden="true"
+                  />
+                  <span>
+                    Por imóvel (
+                    <span
+                      className="tabular-nums"
+                      data-testid="tab-properties-count"
+                    >
+                      {filteredProperties.length}
+                    </span>
+                    )
+                  </span>
                 </TabsTrigger>
               </TabsList>
 
@@ -431,7 +476,16 @@ export function SalesWorkspace() {
                       data-testid="toggle-show-closed"
                       className="h-3.5 w-3.5 accent-[var(--color-primary-600)]"
                     />
-                    Mostrar encerradas ({closedCount})
+                    <span>
+                      Encerradas (
+                      <span
+                        className="tabular-nums"
+                        data-testid="closed-items-count"
+                      >
+                        {closedCount}
+                      </span>
+                      )
+                    </span>
                   </label>
                 )}
 
@@ -477,7 +531,7 @@ export function SalesWorkspace() {
                       title={OPPORTUNITY_STATUS_LABELS[columnStatus]}
                       hint={COLUMN_HINTS[columnStatus]}
                       count={items.length}
-                      emptyText="Nenhuma oportunidade"
+                      emptyText="Sem oportunidades"
                       muted={columnStatus === "PERDIDA"}
                     >
                       {items.map((opp) => {
@@ -494,59 +548,66 @@ export function SalesWorkspace() {
                         const linkedCase = opp.saleCaseId
                           ? fixture.cases.find((c) => c.id === opp.saleCaseId)
                           : undefined;
+                        const showOfferBadge =
+                          opp.status === "EM_PROPOSTA" &&
+                          Boolean(latestVersion);
 
                         return (
                           <div
                             key={opp.id}
                             data-testid={`opp-card-${opp.id}`}
-                            className="rounded-lg border border-border bg-card shadow-2xs transition-colors hover:border-primary/60"
+                            className="rounded-lg border border-border bg-card shadow-2xs transition-colors hover:border-primary/50"
                           >
                             <button
                               type="button"
                               data-testid={`open-opp-btn-${opp.id}`}
                               onClick={() => handleOpenOpportunity(opp.id)}
-                              className="block w-full cursor-pointer p-3 pb-2.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                              className="block w-full cursor-pointer rounded-lg p-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                             >
-                              <p className="line-clamp-2 text-sm font-semibold text-foreground">
+                              <p className="line-clamp-2 text-sm font-semibold leading-snug text-foreground">
                                 {prop?.title ?? opp.propertyId}
                               </p>
                               <p className="mt-0.5 truncate text-xs text-muted-foreground">
-                                {buyer?.name} · {broker?.name}
+                                {buyer?.name}
+                                {broker ? ` · ${broker.name}` : ""}
                               </p>
 
                               <div className="mt-2.5 flex items-center justify-between gap-2">
                                 {opp.status === "PERDIDA" ? (
-                                  <span className="line-clamp-2 text-xs text-[var(--error-fg)]">
+                                  <span className="line-clamp-2 text-xs text-muted-foreground">
                                     {opp.lossReason ?? "Negociação encerrada"}
                                   </span>
                                 ) : latestVersion ? (
                                   <>
-                                    <span className="text-sm font-bold text-foreground">
+                                    <span className="text-sm font-semibold tabular-nums text-foreground">
                                       {formatCurrencyBRL(latestVersion.amount)}
                                     </span>
-                                    <Badge
-                                      variant={getOfferStatusBadgeVariant(
-                                        latestVersion.status,
-                                      )}
-                                      data-testid={
-                                        latestVersion.status === "EXPIRADA"
-                                          ? `expired-badge-${opp.id}`
-                                          : undefined
-                                      }
-                                    >
-                                      {latestVersion.status === "EXPIRADA" && (
-                                        <Clock className="h-3 w-3" />
-                                      )}
-                                      {
-                                        OFFER_VERSION_STATUS_LABELS[
-                                          latestVersion.status
-                                        ]
-                                      }
-                                    </Badge>
+                                    {showOfferBadge && (
+                                      <Badge
+                                        variant={getOfferStatusBadgeVariant(
+                                          latestVersion.status,
+                                        )}
+                                        data-testid={
+                                          latestVersion.status === "EXPIRADA"
+                                            ? `expired-badge-${opp.id}`
+                                            : undefined
+                                        }
+                                      >
+                                        {latestVersion.status ===
+                                          "EXPIRADA" && (
+                                          <Clock className="h-3 w-3" />
+                                        )}
+                                        {
+                                          OFFER_VERSION_STATUS_LABELS[
+                                            latestVersion.status
+                                          ]
+                                        }
+                                      </Badge>
+                                    )}
                                   </>
                                 ) : (
-                                  <span className="text-xs text-muted-foreground">
-                                    Sem proposta · pedido{" "}
+                                  <span className="text-xs tabular-nums text-muted-foreground">
+                                    Pedido{" "}
                                     {prop
                                       ? formatCurrencyBRL(prop.askingPrice)
                                       : "—"}
@@ -555,31 +616,22 @@ export function SalesWorkspace() {
                               </div>
                             </button>
 
-                            <div className="flex items-center justify-between gap-2 border-t border-border px-3 py-1.5 text-[11px] text-muted-foreground">
-                              <span className="font-mono">{opp.code}</span>
-                              {linkedCase ? (
+                            {linkedCase && (
+                              <div className="border-t border-border/70 px-3 py-1.5">
                                 <button
                                   type="button"
                                   data-testid={`card-open-linked-case-${opp.id}`}
                                   onClick={() => handleOpenCase(linkedCase.id)}
-                                  className="inline-flex cursor-pointer items-center gap-1 rounded px-1 py-0.5 font-medium text-[var(--teal-fg)] hover:bg-[var(--teal-subtle)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                  className="inline-flex w-full cursor-pointer items-center justify-between text-xs font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                                 >
-                                  Dossiê em{" "}
-                                  {SALE_CASE_STATUS_LABELS[linkedCase.status]}
-                                  <ArrowRight className="h-3 w-3" />
-                                </button>
-                              ) : (
-                                prop && (
                                   <span>
-                                    {
-                                      PROPERTY_COMMERCIAL_STATUS_LABELS[
-                                        prop.commercialStatus
-                                      ]
-                                    }
+                                    Dossiê ·{" "}
+                                    {SALE_CASE_STATUS_LABELS[linkedCase.status]}
                                   </span>
-                                )
-                              )}
-                            </div>
+                                  <ArrowRight className="h-3 w-3 shrink-0" />
+                                </button>
+                              </div>
+                            )}
                           </div>
                         );
                       })}
@@ -608,7 +660,7 @@ export function SalesWorkspace() {
                       title={SALE_CASE_STATUS_LABELS[caseStatus]}
                       hint={COLUMN_HINTS[caseStatus]}
                       count={items.length}
-                      emptyText="Nenhum dossiê"
+                      emptyText="Sem dossiês"
                     >
                       {items.map((saleCase) => {
                         const prop = fixture.properties.find(
@@ -632,7 +684,7 @@ export function SalesWorkspace() {
                               onClick={() => handleOpenCase(saleCase.id)}
                               className={CARD_BUTTON_CLASS}
                             >
-                              <p className="line-clamp-2 text-sm font-semibold text-foreground">
+                              <p className="line-clamp-2 text-sm font-semibold leading-snug text-foreground">
                                 {prop?.title ?? saleCase.propertyId}
                               </p>
                               <p className="mt-0.5 truncate text-xs text-muted-foreground">
@@ -656,25 +708,15 @@ export function SalesWorkspace() {
                                 </p>
                               ))}
 
-                              {saleCase.legalNotice && (
-                                <p className="mt-1.5 text-[11px] leading-snug text-muted-foreground">
-                                  {saleCase.legalNotice}
+                              {prop && (
+                                <p className="mt-2 text-xs text-muted-foreground">
+                                  {prop.commercialStatus === "SOB_CONTRATO"
+                                    ? "Sob contrato · propriedade ainda não transferida"
+                                    : PROPERTY_COMMERCIAL_STATUS_LABELS[
+                                        prop.commercialStatus
+                                      ]}
                                 </p>
                               )}
-
-                              <div className="mt-2.5 flex items-center justify-between gap-2 border-t border-border pt-2 text-[11px] text-muted-foreground">
-                                <span className="font-mono">
-                                  {saleCase.code}
-                                </span>
-                                {prop && (
-                                  <span>
-                                    Imóvel{" "}
-                                    {PROPERTY_COMMERCIAL_STATUS_LABELS[
-                                      prop.commercialStatus
-                                    ].toLowerCase()}
-                                  </span>
-                                )}
-                              </div>
                             </button>
                           </div>
                         );
@@ -690,7 +732,7 @@ export function SalesWorkspace() {
                   data-testid="cancelled-cases-section"
                   className="space-y-2"
                 >
-                  <h2 className="text-sm font-semibold">
+                  <h2 className="text-xs font-semibold text-muted-foreground">
                     Dossiês cancelados ({cancelledCases.length})
                   </h2>
                   <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-3">
@@ -706,14 +748,9 @@ export function SalesWorkspace() {
                           onClick={() => handleOpenCase(saleCase.id)}
                           className={cn(CARD_BUTTON_CLASS, "bg-secondary/20")}
                         >
-                          <p className="text-sm font-semibold">
-                            {prop?.title}
-                          </p>
+                          <p className="text-sm font-semibold">{prop?.title}</p>
                           <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
                             {saleCase.cancellationReason}
-                          </p>
-                          <p className="mt-2 font-mono text-[11px] text-muted-foreground">
-                            {saleCase.code}
                           </p>
                         </button>
                       );
@@ -746,14 +783,26 @@ export function SalesWorkspace() {
                       className="space-y-3 rounded-xl border border-border bg-card p-4"
                     >
                       <div className="flex items-start justify-between gap-2">
-                        <div className="min-w-0">
-                          <h3 className="font-semibold">{property.title}</h3>
+                        <div className="min-w-0 space-y-0.5">
+                          <h3 className="text-sm font-semibold leading-snug">
+                            {property.title}
+                          </h3>
                           <p className="text-xs text-muted-foreground">
                             {PROPERTY_TYPE_LABELS[property.type]} ·{" "}
                             {property.neighborhood} ·{" "}
-                            <span className="font-semibold text-foreground">
+                            <span className="font-semibold tabular-nums text-foreground">
                               {formatCurrencyBRL(property.askingPrice)}
                             </span>
+                          </p>
+                          <p
+                            className="text-xs text-muted-foreground"
+                            data-testid={`property-listing-status-${property.id}`}
+                          >
+                            {
+                              PROPERTY_LISTING_STATUS_LABELS[
+                                property.listingStatus
+                              ]
+                            }
                           </p>
                         </div>
                         <Badge
@@ -771,16 +820,9 @@ export function SalesWorkspace() {
                         </Badge>
                       </div>
 
-                      <p
-                        className="text-xs text-muted-foreground"
-                        data-testid={`property-listing-status-${property.id}`}
-                      >
-                        {PROPERTY_LISTING_STATUS_LABELS[property.listingStatus]}
-                      </p>
-
                       {/* Lista de oportunidades concorrentes no imóvel */}
-                      <div className="space-y-1.5 border-t border-border pt-2.5">
-                        <div className="flex items-center justify-between text-xs font-semibold">
+                      <div className="space-y-1.5 border-t border-border/70 pt-2.5">
+                        <div className="flex items-center justify-between text-xs font-medium text-muted-foreground">
                           <span>
                             Oportunidades no imóvel ({relatedOpps.length})
                           </span>
@@ -789,7 +831,7 @@ export function SalesWorkspace() {
                               type="button"
                               size="xs"
                               variant="link"
-                              className="h-auto px-0"
+                              className="h-auto px-0 text-xs"
                               onClick={() => handleOpenCase(activeCase.id)}
                               data-testid={`property-open-case-${property.id}`}
                             >
@@ -800,11 +842,11 @@ export function SalesWorkspace() {
                         </div>
 
                         {relatedOpps.length === 0 ? (
-                          <p className="text-xs text-muted-foreground">
+                          <p className="text-xs text-muted-foreground/80">
                             Sem oportunidades registradas.
                           </p>
                         ) : (
-                          <ul className="divide-y divide-border">
+                          <ul className="divide-y divide-border/70">
                             {relatedOpps.map((opp) => {
                               const buyer = fixture.buyers.find(
                                 (b) => b.id === opp.buyerId,
@@ -817,9 +859,9 @@ export function SalesWorkspace() {
                                     onClick={() =>
                                       handleOpenOpportunity(opp.id)
                                     }
-                                    className="flex w-full items-center justify-between gap-2 rounded px-1 py-1.5 text-left text-xs hover:bg-secondary/50"
+                                    className="flex w-full cursor-pointer items-center justify-between gap-2 rounded px-1 py-1.5 text-left text-xs transition-colors hover:bg-secondary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                                   >
-                                    <span className="truncate">
+                                    <span className="truncate font-medium text-foreground">
                                       {buyer?.name}
                                     </span>
                                     <span className="shrink-0 text-muted-foreground">
